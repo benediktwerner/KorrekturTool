@@ -1,0 +1,22 @@
+{
+  "name": "korrekturtool",
+  "version": "0.1.0",
+  "description": "Tool to help mark student exercises at TUM",
+  "main": "main.js",
+  "scripts": {
+    "start": ".\\node_modules\\.bin\\electron ."
+  },
+  "repository": "https://github.com/benediktwerner/KorrekturTool",
+  "author": "Benedikt Werner",
+  "license": "ISC",
+  "devDependencies": {
+    "electron-prebuilt-compile": "^1.7.9"
+  },
+  "dependencies": {
+    "bootstrap": "^4.0.0-beta.2",
+    "jquery": "^3.2.1",
+    "popper.js": "^1.12.6",
+    "react": "^16.1.0",
+    "react-dom": "^16.1.0"
+  }
+}

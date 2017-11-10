@@ -1,0 +1,19 @@
+body {
+    padding-top: 15px;
+}
+
+.form-row {
+    margin-top: 5px;
+}
+
+label {
+    padding-right: 10px;
+}
+
+button {
+    cursor: pointer;
+}
+
+.marking-section {
+    margin-top: 20px;
+}
