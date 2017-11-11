@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import MarkingSection from './MarkingSection';
+import RightView from './RightView';
 
 class App extends Component {
     constructor(props) {
@@ -11,10 +12,12 @@ class App extends Component {
             minExercise: 0,
             maxExercise: 0,
             exercises: {},
-            isMarking: false
+            isMarking: false,
+            rightViewUrl: ""
         }
 
         this.handleChange = this.handleChange.bind(this);
+        this.handleShowFile = this.handleShowFile.bind(this);
         this.handleChangeExerciseMaxPoints = this.handleChangeExerciseMaxPoints.bind(this);
     }
 
@@ -59,7 +62,7 @@ class App extends Component {
     }
 
     renderExerciseConfig() {
-        if (!this.state.minExercise || !this.state.maxExercise) {
+        if (this.state.minExercise <= 0 || this.state.maxExercise <= 0) {
             return "";
         }
 
@@ -75,33 +78,42 @@ class App extends Component {
         return exercises;
     }
 
+    handleShowFile(event) {
+        this.setState({
+            rightViewUrl: event.target.dataset["file"]
+        });
+    }
+
     render() {
         var markingSection;
         if (this.state.isMarking)
-            markingSection = <MarkingSection state={this.state} />;
+            markingSection = <MarkingSection state={this.state} onShowFile={this.handleShowFile} />;
         else markingSection = <button type="button" className="btn btn-primary" onClick={() => { this.setState({ isMarking: true }) }}>Bewerten</button>;
 
         return (
-            <div className="container">
-                <div className="form-row">
-                    <div className="col form-group form-inline">
-                        <label>Blatt:</label>
-                        <input id="blatt" type="number" className="form-control" placeholder="Blatt" onChange={this.handleChange} value={this.state.blatt}></input>
+            <div className="container-fluid full-height">
+                <div className="row full-height">
+                    <div className="col">
+                        <div className="form-row">
+                            <div className="col form-group">
+                                <label>Blatt:</label>
+                                <input id="blatt" type="number" className="form-control" placeholder="Blatt" onChange={this.handleChange} value={this.state.blatt}></input>
+                            </div>
+                            <div className="col form-group">
+                                <label>Erste Aufgaben:</label>
+                                <input id="minExercise" type="number" className="form-control" placeholder="Erste Aufgabe" onChange={this.handleChange} value={this.state.minExercise}></input>
+                            </div>
+                            <div className="col form-group">
+                                <label>Letzte Aufgaben:</label>
+                                <input id="maxExercise" type="number" className="form-control" placeholder="Letzte Aufgabe" onChange={this.handleChange} value={this.state.maxExercise}></input>
+                            </div>
+                        </div>
+                        <div className="form-row">
+                            {this.renderExerciseConfig()}
+                        </div>
+                        {markingSection}
                     </div>
-                    <div className="col form-group form-inline">
-                        <label>Erste Aufgaben:</label>
-                        <input id="minExercise" type="number" className="form-control" placeholder="Erste Aufgabe" onChange={this.handleChange} value={this.state.minExercise}></input>
-                    </div>
-                    <div className="col form-group form-inline">
-                        <label>Letzte Aufgaben:</label>
-                        <input id="maxExercise" type="number" className="form-control" placeholder="Letzte Aufgabe" onChange={this.handleChange} value={this.state.maxExercise}></input>
-                    </div>
-                </div>
-                <div className="form-row">
-                    {this.renderExerciseConfig()}
-                </div>
-                <div className="marking-section">
-                    {markingSection}
+                    <RightView src={this.state.rightViewUrl} />
                 </div>
             </div>
         );

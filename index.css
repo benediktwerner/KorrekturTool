@@ -1,13 +1,14 @@
-body {
+html, body, .full-height {
+    height: 100%;
+}
+
+.container-fluid {
     padding-top: 15px;
+    padding-bottom: 15px;
 }
 
 .form-row {
     margin-top: 5px;
-}
-
-label {
-    padding-right: 10px;
 }
 
 button {
@@ -16,4 +17,88 @@ button {
 
 .marking-section {
     margin-top: 20px;
+    margin-bottom: 35px;
+}
+
+.align-right {
+    text-align: right;
+}
+
+.indexer {
+    margin-right: 20px;
+    font-size: 1.1em;
+}
+
+.btn-prev {
+    margin-right: 10px;
+}
+
+.btn-prev .fa-arrow-left {
+    margin-right: 10px;
+}
+
+.btn-next .fa-arrow-right {
+    margin-left: 10px;
+}
+
+.valign-content-middle > * {
+    vertical-align: middle;
+}
+
+.heading-margin {
+    margin-top: 20px;
+    margin-bottom: 15px;
+}
+
+.icon-java-bold, .fa-file-pdf-o, .fa-times-circle {
+    color: red;
+}
+
+.fa-check-circle {
+    color: green;
+}
+
+.fa-question-circle {
+    color: gold;
+}
+
+.fa-padding {
+    padding-right: 7px;
+}
+
+.right-view {
+    overflow: hidden;
+    border-left: 1px solid rgba(0, 0, 0, 0.15);
+    padding: 0;
+    height: 100%;
+}
+
+.right-view-content {
+    padding: 0 15px;
+}
+
+#resize-handle {
+    position: absolute;
+    left: -4px;
+    top: 0;
+    bottom: 0;
+    width: 16px;
+    cursor: w-resize;
+}
+
+.file-link {
+    cursor: pointer;
+}
+
+a.file-link:not([href]):hover {
+    text-decoration: underline;
+}
+
+input.points.form-control {
+    width: 45px;
+    margin-right: 5px;
+}
+
+.align-flex-start {
+    align-items: flex-start;
 }
