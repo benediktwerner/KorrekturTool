@@ -102,11 +102,19 @@ a.file-link:not([href]):hover {
 .points {
     align-items: flex-start;
     font-size: 1.2em;
+    max-width: 100px;
 }
 
 .points>input.form-control {
-    width: 45px;
+    width: 40px;
     margin-right: 5px;
+    text-align: right;
+}
+
+.points>input::-webkit-inner-spin-button,
+.points>input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 #close-view {

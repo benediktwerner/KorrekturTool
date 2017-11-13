@@ -118,11 +118,13 @@ class MarkingSection extends Component {
 
         var exercises = [];
         for (var i = this.props.state.minExercise; i <= this.props.state.maxExercise; i++) {
+            let points = this.state.points[i];
+            if (points === undefined || points === null) points = "";
             exercises.push(<div key={"exercise-" + i}>
                 <h4 className="heading-margin">Aufgabe {this.props.state.blatt}.{i}</h4>
                 <div className="row">
                     <div className="col form-inline points">
-                        <input type="number" className="form-control form-control-sm" data-exercise={i} onChange={this.handleChange} value={this.state.points[i] || ""}></input> / {this.props.state.exercises[i].maxPoints || 0}
+                        <input type="number" className="form-control form-control-sm" data-exercise={i} onChange={this.handleChange} value={points}></input> / {this.props.state.exercises[i].maxPoints || 0}
                     </div>
                     <div className="col">
                         <textarea id={"exercise-" + i + "-text"} className="form-control"></textarea>
