@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
+import fs from 'fs-extra';
+import highlighter from 'node-syntaxhighlighter';
 import $ from 'jquery';
 
 let isResizing = false;
+const languageJava = highlighter.getLanguage("java");
 
 class RightView extends Component {
     constructor(props) {
@@ -41,6 +44,16 @@ class RightView extends Component {
             .on("mousemove", this.handleResize);
     }
 
+    renderContent() {
+        if (!this.props.src)
+            return "";
+        else if (this.props.src.endsWith(".pdf"))
+            return <webview className="full-height" src={this.props.src} plugins="true"></webview>;
+
+        const content = fs.readFileSync(this.props.src, "utf8");
+        return <div className="full-height" dangerouslySetInnerHTML={{ __html: highlighter.highlight(content, languageJava, { "class-name": "full-height" }) }}></div>;
+    }
+
     render() {
         var style = { maxWidth: this.state.width + "px" };
         if (this.state.width === 0 || !this.props.src)
@@ -48,8 +61,8 @@ class RightView extends Component {
         return (
             <div className="col right-view" style={style}>
                 <div id="resize-handle"></div>
-                <div className="right-view-content full-height">
-                    <webview className="full-height" src={this.props.src} plugins="true"></webview>
+                <div className="full-height">
+                    {this.renderContent()}
                 </div>
                 <button id="close-view" title="Close" onClick={() => this.setState({ width: 0 })}><i className="fa fa-times"></i></button>
             </div>

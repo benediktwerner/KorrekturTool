@@ -73,12 +73,13 @@ button {
 .right-view {
     overflow: hidden;
     border-left: 1px solid rgba(0, 0, 0, 0.15);
-    padding: 15px 0;
+    padding: 15px 0 15px 5px;
     height: 100%;
+    overflow: visible;
 }
 
-.right-view-content {
-    padding: 0 15px;
+.right-view>* {
+    overflow: hidden;
 }
 
 #resize-handle {
