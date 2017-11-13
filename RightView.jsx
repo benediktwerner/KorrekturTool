@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import $ from 'jquery';
 
 let isResizing = false;
@@ -38,7 +37,7 @@ class RightView extends Component {
     componentDidMount() {
         $("#resize-handle").on("mousedown", () => isResizing = true);
         $(document)
-            .on("mouseup", () => {isResizing = false})
+            .on("mouseup", () => { isResizing = false })
             .on("mousemove", this.handleResize);
     }
 
@@ -52,6 +51,7 @@ class RightView extends Component {
                 <div className="right-view-content full-height">
                     <webview className="full-height" src={this.props.src} plugins="true"></webview>
                 </div>
+                <button id="close-view" title="Close" onClick={() => this.setState({ width: 0 })}><i className="fa fa-times"></i></button>
             </div>
         );
     }

@@ -2,6 +2,7 @@ const { app, BrowserWindow } = require('electron')
 const path = require('path')
 const url = require('url')
 const fs = require('fs-extra');
+const os = require('os');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -34,12 +35,14 @@ app.on('ready', createWindow)
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
-  const files = fs.readdirSync(".");
-  files.filter(name => /^binTmp.*/.test(name))
+  const tmpDir = os.tmpdir()
+  const files = fs.readdirSync(tmpDir);
+  files.filter(name => /^korrekturToolTmp.*/.test(name))
     .forEach((file) => {
-      console.log("Removing tmp dir: " + file);
-      fs.emptyDirSync(file);
-      fs.rmdirSync(file);
+      const filePath = tmpDir + "/" + file;
+      console.log("Removing tmp dir: " + filePath);
+      fs.emptyDirSync(filePath);
+      fs.rmdirSync(filePath);
     });
 
   // On macOS it is common for applications and their menu bar

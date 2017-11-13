@@ -1,10 +1,7 @@
-html, body, .full-height {
+html,
+body,
+.full-height {
     height: 100%;
-}
-
-.container-fluid {
-    padding-top: 15px;
-    padding-bottom: 15px;
 }
 
 .form-row {
@@ -41,7 +38,7 @@ button {
     margin-left: 10px;
 }
 
-.valign-content-middle > * {
+.valign-content-middle>* {
     vertical-align: middle;
 }
 
@@ -50,7 +47,9 @@ button {
     margin-bottom: 15px;
 }
 
-.icon-java-bold, .fa-file-pdf-o, .fa-times-circle {
+.icon-java-bold,
+.fa-file-pdf-o,
+.fa-times-circle {
     color: red;
 }
 
@@ -66,10 +65,15 @@ button {
     padding-right: 7px;
 }
 
+.main-view {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
 .right-view {
     overflow: hidden;
     border-left: 1px solid rgba(0, 0, 0, 0.15);
-    padding: 0;
+    padding: 15px 0;
     height: 100%;
 }
 
@@ -94,11 +98,24 @@ a.file-link:not([href]):hover {
     text-decoration: underline;
 }
 
-input.points.form-control {
+.points {
+    align-items: flex-start;
+    font-size: 1.2em;
+}
+
+.points>input.form-control {
     width: 45px;
     margin-right: 5px;
 }
 
-.align-flex-start {
-    align-items: flex-start;
+#close-view {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.06);
+    border: none;
+}
+
+.output {
+    width: 100%;
 }

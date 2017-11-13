@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import fs from 'fs-extra';
-import { trim } from 'jquery';
+import $, { trim } from 'jquery';
 import jschardet from 'jschardet';
 import { exec } from 'child_process';
+import os from 'os';
 
 class MarkingSection extends Component {
     constructor(props) {
@@ -16,10 +16,13 @@ class MarkingSection extends Component {
             files: [],
             compileStatus: {},
             encodings: {},
-            binDir: fs.mkdtempSync("binTmp") + "/"
+            binDir: fs.mkdtempSync(os.tmpdir() + "/korrekturToolTmp") + "/",
+            points: {}
         }
 
+        this.handleChange = this.handleChange.bind(this);
         this.handlePrevNext = this.handlePrevNext.bind(this);
+        this.handleShowOutput = this.handleShowOutput.bind(this);
     }
 
     componentDidMount() {
@@ -44,7 +47,8 @@ class MarkingSection extends Component {
             return {
                 encodings: encodings,
                 compileStatus: compileStatus,
-                files: files
+                files: files,
+                points: {}
             };
         });
     }
@@ -77,6 +81,16 @@ class MarkingSection extends Component {
         }
     }
 
+    handleChange(event) {
+        const exercise = event.target.dataset.exercise;
+        const newValue = parseInt(event.target.value, 10);
+        this.setState((state, props) => {
+            const points = state.points;
+            points[exercise] = newValue;
+            return { points: points };
+        });
+    }
+
     renderFiles() {
         const basePath = this.state.students[this.state.index].dirPath + "/";
         const files = this.state.files;
@@ -105,14 +119,29 @@ class MarkingSection extends Component {
             exercises.push(<div key={"exercise-" + i}>
                 <h4 className="heading-margin">Aufgabe {this.props.state.blatt}.{i}</h4>
                 <div className="row">
-                    <div className="col-1 form-inline align-flex-start"><input type="number" className="form-control form-control-sm points"></input> / {this.props.state.exercises[i].maxPoints || "?"}</div>
+                    <div className="col-1 form-inline points">
+                        <input type="number" className="form-control form-control-sm" data-exercise={i} onChange={this.handleChange} value={this.state.points[i] || ""}></input> / {this.props.state.exercises[i].maxPoints || "?"}
+                    </div>
                     <div className="col">
-                        <textarea className="form-control"></textarea>
+                        <textarea id={"exercise-" + i + "-text"} className="form-control"></textarea>
                     </div>
                 </div>
             </div>);
         }
         return exercises;
+    }
+
+    handleShowOutput(event) {
+        let output = "Gesamt: " + this.getTotalPoints() + " / " + this.getMaxPoints() + "\n\n";
+        for (let i = this.props.state.minExercise; i <= this.props.state.maxExercise; i++) {
+            output += "Aufgabe " + this.props.state.blatt + "." + i;
+            output += " (" + this.state.points[i] + " / " + this.props.state.exercises[i].maxPoints + ")\n";
+            output += $("#exercise-" + i + "-text").val() + "\n\n";
+        }
+
+        $("#modal .modal-title").text("Output");
+        $("#modal .modal-body").append('<textarea class="form-control output">' + output + "</textarea>");
+        $("textarea.output").css("height", Math.max($(window).height() - 275, 300) + "px");
     }
 
     render() {
@@ -122,6 +151,7 @@ class MarkingSection extends Component {
                 <div className="row">
                     <div className="col">
                         <h3>{this.state.students[this.state.index].number}</h3>
+                        <button className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={this.handleShowOutput}>HTML</button>
                     </div>
                     <div className="col align-right valign-content-middle">
                         <span className="indexer">{this.state.index + 1} / {this.state.students.length}</span>
@@ -136,10 +166,26 @@ class MarkingSection extends Component {
                 <h3 className="heading-margin">Dateien</h3>
                 {this.renderFiles()}
                 <hr />
-                <h3 className="heading-margin">Aufgaben</h3>
+                <h3 className="heading-margin">Aufgaben ({this.getTotalPoints() || "0"} / {this.getMaxPoints() || "?"})</h3>
                 {this.renderExercises()}
             </div>
         );
+    }
+
+    getTotalPoints() {
+        var points = 0;
+        for (var i in this.state.points) {
+            points += this.state.points[i];
+        }
+        return points;
+    }
+
+    getMaxPoints() {
+        var maxPoints = 0;
+        for (var i in this.props.state.exercises) {
+            maxPoints += this.props.state.exercises[i].maxPoints;
+        }
+        return maxPoints;
     }
 }
 

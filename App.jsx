@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import MarkingSection from './MarkingSection';
 import RightView from './RightView';
 
@@ -18,14 +17,15 @@ class App extends Component {
 
         this.handleChange = this.handleChange.bind(this);
         this.handleShowFile = this.handleShowFile.bind(this);
+        this.handleChangeMinMaxExercise = this.handleChangeMinMaxExercise.bind(this);
         this.handleChangeExerciseMaxPoints = this.handleChangeExerciseMaxPoints.bind(this);
     }
 
     handleChangeExerciseMaxPoints(event) {
         const key = event.target.dataset["exerciseId"];
-        const value = event.target.value;
+        const value = parseInt(event.target.value, 10);
         this.setState(function (state, props) {
-            var exercises = state.exercises;
+            let exercises = state.exercises;
             exercises[key] = {
                 maxPoints: value
             };
@@ -35,27 +35,33 @@ class App extends Component {
         });
     }
 
-    handleChange(event) {
-        var createExercisesMin = -1, createExercisesMax = -1;
+    handleChangeMinMaxExercise(event) {
+        let newMinExercise = null, newMaxExercise = null;
         if (event.target.id === "minExercise") {
-            createExercisesMin = parseInt(event.target.value, 10);
-            createExercisesMax = this.state.minExercise;
+            newMinExercise = parseInt(event.target.value, 10);
         }
         else if (event.target.id === "maxExercise") {
-            createExercisesMin = this.state.maxExercise + 1;
-            createExercisesMax = parseInt(event.target.value, 10) + 1;
+            newMaxExercise = parseInt(event.target.value, 10);
         }
-        if (createExercisesMax - createExercisesMin > 0) {
-            this.setState(function (state, props) {
-                var exercises = state.exercises;
-                for (var i = createExercisesMin; i < createExercisesMax; i++) {
-                    exercises[i] = {
-                        maxPoints: ""
-                    };
-                }
-                return { exercises: exercises };
-            });
-        }
+        this.setState(function (state, props) {
+            let exercises = {};
+            const defaultExercise = { maxPoints: "" };
+            if (!newMinExercise) newMinExercise = state.minExercise;
+            if (!newMaxExercise) newMaxExercise = state.maxExercise;
+            for (let i = newMinExercise; i <= newMaxExercise; i++) {
+                exercises[i] = {
+                    maxPoints: (state.exercises[i] || defaultExercise).maxPoints
+                };
+            }
+            return {
+                exercises: exercises,
+                minExercise: newMinExercise,
+                maxExercise: newMaxExercise
+            };
+        });
+    }
+
+    handleChange(event) {
         this.setState({
             [event.target.id]: parseInt(event.target.value, 10)
         });
@@ -66,8 +72,8 @@ class App extends Component {
             return "";
         }
 
-        var exercises = [];
-        for (var i = this.state.minExercise; i <= this.state.maxExercise; i++) {
+        let exercises = [];
+        for (let i = this.state.minExercise; i <= this.state.maxExercise; i++) {
             exercises.push(
                 <div className="col form-group" key={"exercise-" + i}>
                     <label>{this.state.blatt}.{i}</label>
@@ -85,7 +91,7 @@ class App extends Component {
     }
 
     render() {
-        var markingSection;
+        let markingSection;
         if (this.state.isMarking)
             markingSection = <MarkingSection state={this.state} onShowFile={this.handleShowFile} />;
         else markingSection = <button type="button" className="btn btn-primary" onClick={() => { this.setState({ isMarking: true }) }}>Bewerten</button>;
@@ -93,7 +99,7 @@ class App extends Component {
         return (
             <div className="container-fluid full-height">
                 <div className="row full-height">
-                    <div className="col">
+                    <div className="col main-view">
                         <div className="form-row">
                             <div className="col form-group">
                                 <label>Blatt:</label>
@@ -101,11 +107,11 @@ class App extends Component {
                             </div>
                             <div className="col form-group">
                                 <label>Erste Aufgaben:</label>
-                                <input id="minExercise" type="number" className="form-control" placeholder="Erste Aufgabe" onChange={this.handleChange} value={this.state.minExercise}></input>
+                                <input id="minExercise" type="number" className="form-control" placeholder="Erste Aufgabe" onChange={this.handleChangeMinMaxExercise} value={this.state.minExercise}></input>
                             </div>
                             <div className="col form-group">
                                 <label>Letzte Aufgaben:</label>
-                                <input id="maxExercise" type="number" className="form-control" placeholder="Letzte Aufgabe" onChange={this.handleChange} value={this.state.maxExercise}></input>
+                                <input id="maxExercise" type="number" className="form-control" placeholder="Letzte Aufgabe" onChange={this.handleChangeMinMaxExercise} value={this.state.maxExercise}></input>
                             </div>
                         </div>
                         <div className="form-row">
