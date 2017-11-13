@@ -132,14 +132,24 @@ class MarkingSection extends Component {
     }
 
     handleShowOutput(event) {
-        let output = "Gesamt: " + this.getTotalPoints() + " / " + this.getMaxPoints() + "\n\n";
+        let output = '<table style="border: 2px solid #333">\n';
+        output += '<tr style="border: 2px solid black"><th><b>Aufgabe</b></th><th><b>Bewertung</b></th><th><b>Kommentar</b></th></tr>\n';
+        
         for (let i = this.props.state.minExercise; i <= this.props.state.maxExercise; i++) {
-            output += "Aufgabe " + this.props.state.blatt + "." + i;
-            output += " (" + this.state.points[i] + " / " + this.props.state.exercises[i].maxPoints + ")\n";
-            output += $("#exercise-" + i + "-text").val() + "\n\n";
+            output += '<tr style="border-bottom: 1px solid #333">\n';
+            output += `<td style="text-align: center; vertical-align: middle"><b>${this.props.state.blatt}.${i}</b></td>\n`;
+            output += `<td style="text-align: center; vertical-align: middle">${this.state.points[i]} / ${this.props.state.exercises[i].maxPoints}</td>\n`;
+            output += `<td>${$('#exercise-' + i + '-text').val()}</tdborder:>\n`;
+            output += '</tr>\n';
         }
+        output += '</table>\n';
+        output += `<br /><p><b>Gesamt (Σ): ${this.getTotalPoints()} von ${this.getMaxPoints()}</b></p>`;
 
         $("#modal .modal-title").text("Output");
+        $("#modal .btn-primary").text("Kopieren").click(() => {
+            $("textarea.output").select();
+            document.execCommand('copy');
+        });
         $("#modal .modal-body").append('<textarea class="form-control output">' + output + "</textarea>");
         $("textarea.output").css("height", Math.max($(window).height() - 275, 300) + "px");
     }
@@ -151,7 +161,6 @@ class MarkingSection extends Component {
                 <div className="row">
                     <div className="col">
                         <h3>{this.state.students[this.state.index].number}</h3>
-                        <button className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={this.handleShowOutput}>HTML</button>
                     </div>
                     <div className="col align-right valign-content-middle">
                         <span className="indexer">{this.state.index + 1} / {this.state.students.length}</span>
@@ -168,6 +177,7 @@ class MarkingSection extends Component {
                 <hr />
                 <h3 className="heading-margin">Aufgaben ({this.getTotalPoints() || "0"} / {this.getMaxPoints() || "?"})</h3>
                 {this.renderExercises()}
+                <button className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={this.handleShowOutput}>HTML</button>
             </div>
         );
     }
