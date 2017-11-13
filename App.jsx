@@ -23,7 +23,8 @@ class App extends Component {
 
     handleChangeExerciseMaxPoints(event) {
         const key = event.target.dataset["exerciseId"];
-        const value = parseInt(event.target.value, 10);
+        let value = parseFloat(event.target.value, 10);
+        if (value < 0) value = 0;
         this.setState(function (state, props) {
             let exercises = state.exercises;
             exercises[key] = {
@@ -38,16 +39,18 @@ class App extends Component {
     handleChangeMinMaxExercise(event) {
         let newMinExercise = null, newMaxExercise = null;
         if (event.target.id === "minExercise") {
-            newMinExercise = parseInt(event.target.value, 10);
+            newMinExercise = parseFloat(event.target.value, 10);
+            if (newMinExercise < 0) newMinExercise = 0;
         }
         else if (event.target.id === "maxExercise") {
-            newMaxExercise = parseInt(event.target.value, 10);
+            newMaxExercise = parseFloat(event.target.value, 10);
+            if (newMaxExercise < 0) newMaxExercise = 0;
         }
         this.setState(function (state, props) {
             let exercises = {};
-            const defaultExercise = { maxPoints: "" };
-            if (!newMinExercise) newMinExercise = state.minExercise;
-            if (!newMaxExercise) newMaxExercise = state.maxExercise;
+            const defaultExercise = { maxPoints: 0 };
+            if (newMinExercise === null) newMinExercise = state.minExercise;
+            if (newMaxExercise === null) newMaxExercise = state.maxExercise;
             for (let i = newMinExercise; i <= newMaxExercise; i++) {
                 exercises[i] = {
                     maxPoints: (state.exercises[i] || defaultExercise).maxPoints

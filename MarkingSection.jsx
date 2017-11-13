@@ -57,7 +57,7 @@ class MarkingSection extends Component {
         const compilePath = this.state.binDir + fileName;
         fs.copy(basePath + fileName, compilePath)
             .then(() => {
-                exec('javac -encoding utf-8 "' + compilePath + '"', (err, stdout, stderr) => {
+                exec(`javac -encoding utf-8 "${compilePath}"`, (err, stdout, stderr) => {
                     this.setState((state, props) => {
                         var compileStatus = state.compileStatus;
                         compileStatus[fileName] = err ? "error" : "success";
@@ -83,7 +83,9 @@ class MarkingSection extends Component {
 
     handleChange(event) {
         const exercise = event.target.dataset.exercise;
-        const newValue = parseInt(event.target.value, 10);
+        let newValue = parseFloat(event.target.value, 10);
+        if (newValue < 0) newValue = 0;
+        if (newValue > this.props.state.exercises[exercise].maxPoints) newValue = this.props.state.exercises[exercise].maxPoints;
         this.setState((state, props) => {
             const points = state.points;
             points[exercise] = newValue;
@@ -119,8 +121,8 @@ class MarkingSection extends Component {
             exercises.push(<div key={"exercise-" + i}>
                 <h4 className="heading-margin">Aufgabe {this.props.state.blatt}.{i}</h4>
                 <div className="row">
-                    <div className="col-1 form-inline points">
-                        <input type="number" className="form-control form-control-sm" data-exercise={i} onChange={this.handleChange} value={this.state.points[i] || ""}></input> / {this.props.state.exercises[i].maxPoints || "?"}
+                    <div className="col form-inline points">
+                        <input type="number" className="form-control form-control-sm" data-exercise={i} onChange={this.handleChange} value={this.state.points[i] || ""}></input> / {this.props.state.exercises[i].maxPoints || 0}
                     </div>
                     <div className="col">
                         <textarea id={"exercise-" + i + "-text"} className="form-control"></textarea>
@@ -139,11 +141,12 @@ class MarkingSection extends Component {
             output += '<tr style="border-bottom: 1px solid #333">\n';
             output += `<td style="text-align: center; vertical-align: middle"><b>${this.props.state.blatt}.${i}</b></td>\n`;
             output += `<td style="text-align: center; vertical-align: middle">${this.state.points[i]} / ${this.props.state.exercises[i].maxPoints}</td>\n`;
-            output += `<td>${$('#exercise-' + i + '-text').val()}</tdborder:>\n`;
+            output += `<td>${$('#exercise-' + i + '-text').val()}</td>\n`;
             output += '</tr>\n';
         }
         output += '</table>\n';
-        output += `<br /><p><b>Gesamt (Σ): ${this.getTotalPoints()} von ${this.getMaxPoints()}</b></p>`;
+        output += '<br />\n';
+        output += `<p><b>Gesamt (Σ): ${this.getTotalPoints()} von ${this.getMaxPoints()}</b></p>`;
 
         $("#modal .modal-title").text("Output");
         $("#modal .btn-primary").text("Kopieren").click(() => {
