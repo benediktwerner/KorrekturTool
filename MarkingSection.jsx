@@ -136,7 +136,7 @@ class MarkingSection extends Component {
     handleShowOutput(event) {
         let output = '<table style="border: 2px solid #333">\n';
         output += '<tr style="border: 2px solid black"><th><b>Aufgabe</b></th><th><b>Bewertung</b></th><th><b>Kommentar</b></th></tr>\n';
-        
+
         for (let i = this.props.state.minExercise; i <= this.props.state.maxExercise; i++) {
             output += '<tr style="border-bottom: 1px solid #333">\n';
             output += `<td style="text-align: center; vertical-align: middle"><b>${this.props.state.blatt}.${i}</b></td>\n`;
