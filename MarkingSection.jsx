@@ -119,7 +119,7 @@ class MarkingSection extends Component {
         var exercises = [];
         for (var i = this.props.state.minExercise; i <= this.props.state.maxExercise; i++) {
             let points = this.state.points[i];
-            if (points === undefined || points === null) points = "";
+            if (points === undefined || points === null || isNaN(points)) points = "";
             exercises.push(<div key={"exercise-" + i}>
                 <h4 className="heading-margin">Aufgabe {this.props.state.blatt}.{i}</h4>
                 <div className="row">
