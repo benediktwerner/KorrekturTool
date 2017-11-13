@@ -1,3 +1,4 @@
+import { ipcRenderer } from 'electron';
 import React, { Component } from 'react';
 import MarkingSection from './MarkingSection';
 import RightView from './RightView';
@@ -19,6 +20,13 @@ class App extends Component {
         this.handleShowFile = this.handleShowFile.bind(this);
         this.handleChangeMinMaxExercise = this.handleChangeMinMaxExercise.bind(this);
         this.handleChangeExerciseMaxPoints = this.handleChangeExerciseMaxPoints.bind(this);
+
+        ipcRenderer.on('save', (event, arg) => {
+            console.log("Save"); // TODO: save state to file
+        });
+        ipcRenderer.on('load', (event, arg) => {
+            console.log("Load"); // TODO: load state from file
+        });
     }
 
     handleChangeExerciseMaxPoints(event) {
