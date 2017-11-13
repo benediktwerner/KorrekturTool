@@ -19,6 +19,7 @@
     "fs-extra": "^4.0.2",
     "jquery": "^3.2.1",
     "jschardet": "^1.6.0",
+    "node-syntaxhighlighter": "^0.8.1",
     "popper.js": "^1.12.6",
     "react": "^16.1.0",
     "react-dom": "^16.1.0"
