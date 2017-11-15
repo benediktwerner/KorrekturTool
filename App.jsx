@@ -101,7 +101,7 @@ class App extends Component {
     render() {
         let markingSection;
         if (this.state.isMarking)
-            markingSection = <MarkingSection state={this.state} onShowFile={this.handleShowFile} />;
+            markingSection = <MarkingSection state={this.state} onShowFile={this.handleShowFile} setRunListener={(run) => this.onRun = run} />;
         else markingSection = <button type="button" className="btn btn-primary" onClick={() => { this.setState({ isMarking: true }) }}>Bewerten</button>;
 
         return (
@@ -127,7 +127,7 @@ class App extends Component {
                         </div>
                         {markingSection}
                     </div>
-                    <RightView src={this.state.rightViewUrl} />
+                    <RightView src={this.state.rightViewUrl} onRun={this.onRun} showRunButton={this.state.rightViewUrl.endsWith(".java")} />
                 </div>
             </div>
         );

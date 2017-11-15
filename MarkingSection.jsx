@@ -1,9 +1,14 @@
+import { remote } from 'electron';
 import React, { Component } from 'react';
 import fs from 'fs-extra';
 import $, { trim } from 'jquery';
 import jschardet from 'jschardet';
 import { exec } from 'child_process';
 import os from 'os';
+import path from 'path';
+import { addOutput } from './RightView';
+
+const dialog = remote.dialog;
 
 class MarkingSection extends Component {
     constructor(props) {
@@ -20,9 +25,13 @@ class MarkingSection extends Component {
             points: {}
         }
 
+        this.handleRun = this.handleRun.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handlePrevNext = this.handlePrevNext.bind(this);
         this.handleShowOutput = this.handleShowOutput.bind(this);
+
+        if (this.props.setRunListener)
+            this.props.setRunListener(this.handleRun);
     }
 
     componentDidMount() {
@@ -68,6 +77,26 @@ class MarkingSection extends Component {
                 });
             })
             .catch(err => console.error(err));
+    }
+
+    handleRun(file) {
+        const fileName = path.basename(file);
+        if (this.state.compileStatus[fileName] !== "success") {
+            dialog.showErrorBox("Fehler", "Das Program konnte nicht kompiliert werden!");
+            return;
+        }
+
+        exec(`java -cp "${this.state.binDir}" ${fileName.replace(".java", "")}`, (err, stdout, stderr) => {
+            if (err) {
+                console.error(err);
+                console.error(stderr);
+                dialog.showErrorBox("Fehler", "Beim Ausführen des Programs ist ein Fehler aufgetreten:\n\n" + stderr);
+                return;
+            }
+
+            if (stderr) addOutput(stderr, "error");
+            if (stdout) addOutput(stdout);
+        });
     }
 
     handlePrevNext(event) {

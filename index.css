@@ -117,14 +117,52 @@ a.file-link:not([href]):hover {
     margin: 0;
 }
 
-#close-view {
+#control-bar {
     position: absolute;
     top: 0;
     right: 0;
-    background-color: rgba(0, 0, 0, 0.06);
+    color: rgba(0, 0, 0, 0.7);
+    background-color: #efefef;
+}
+
+#control-bar button {
+    float: right;
+    background-color: transparent;
     border: none;
+    outline: none;
+    color: rgba(0, 0, 0, 0.7);
+}
+
+#control-bar button:hover {
+    color: black;
+}
+
+#control-bar .divider {
+    color: rgba(0, 0, 0, 0.2);
+    float: right;
+}
+
+#control-bar .divider::before {
+    content: "|";
 }
 
 .output {
     width: 100%;
+}
+
+.syntaxhighlighter {
+    overflow: visible !important;
+}
+
+#console-output {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    right: 0;
+    max-height: 300px;
+    overflow-y: scroll;
+}
+
+.error {
+    color: red;
 }
