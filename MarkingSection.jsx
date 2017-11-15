@@ -7,8 +7,10 @@ import { exec } from 'child_process';
 import os from 'os';
 import path from 'path';
 import { addOutput } from './RightView';
+import IssueInput from './IssueInput';
 
 const dialog = remote.dialog;
+
 
 class MarkingSection extends Component {
     constructor(props) {
@@ -22,7 +24,8 @@ class MarkingSection extends Component {
             compileStatus: {},
             encodings: {},
             binDir: fs.mkdtempSync(os.tmpdir() + "/korrekturToolTmp") + "/",
-            points: {}
+            points: {},
+            testButton: false
         }
 
         this.handleRun = this.handleRun.bind(this);
@@ -156,6 +159,7 @@ class MarkingSection extends Component {
                         <input type="number" className="form-control form-control-sm" data-exercise={i} onChange={this.handleChange} value={points}></input> / {this.props.state.exercises[i].maxPoints || 0}
                     </div>
                     <div className="col">
+                        <IssueInput text="Encoding falsch" points="-1" value={this.state.testButton} onClick={() => this.setState({testButton: !this.state.testButton})} />
                         <textarea id={"exercise-" + i + "-text"} className="form-control"></textarea>
                     </div>
                 </div>
