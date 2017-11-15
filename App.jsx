@@ -1,7 +1,10 @@
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, remote } from 'electron';
 import React, { Component } from 'react';
+import fs from 'fs-extra';
 import MarkingSection from './MarkingSection';
 import RightView from './RightView';
+
+const dialog = remote.dialog;
 
 class App extends Component {
     constructor(props) {
@@ -16,17 +19,11 @@ class App extends Component {
             rightViewUrl: ""
         }
 
+        this.addSaveLoadListeners();
         this.handleChange = this.handleChange.bind(this);
         this.handleShowFile = this.handleShowFile.bind(this);
         this.handleChangeMinMaxExercise = this.handleChangeMinMaxExercise.bind(this);
         this.handleChangeExerciseMaxPoints = this.handleChangeExerciseMaxPoints.bind(this);
-
-        ipcRenderer.on('save', (event, arg) => {
-            console.log("Save"); // TODO: save state to file
-        });
-        ipcRenderer.on('load', (event, arg) => {
-            console.log("Load"); // TODO: load state from file
-        });
     }
 
     handleChangeExerciseMaxPoints(event) {
@@ -134,6 +131,37 @@ class App extends Component {
                 </div>
             </div>
         );
+    }
+
+    addSaveLoadListeners() {
+        const options = {
+            filters: [
+                { name: "Json", extensions: ["json"] },
+                { name: "All Files", extensions: ["*"] }
+            ],
+            properties: ["openFile"]
+        };
+        ipcRenderer.on('save', (event, arg) => {
+            dialog.showSaveDialog(options, (fileName) => {
+                if (fileName === undefined)
+                    return;
+
+                fs.writeJson(fileName, this.state, err => {
+                    if (err) console.error(err)
+                });
+            });
+        });
+        ipcRenderer.on('load', (event, arg) => {
+            dialog.showOpenDialog(options, (fileName) => {
+                if (!fileName)
+                    return;
+
+                fs.readJson(fileName[0], (err, state) => {
+                    if (err) console.error(err);
+                    this.setState(state);
+                });
+            });
+        });
     }
 }
 
