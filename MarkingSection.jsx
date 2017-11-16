@@ -30,9 +30,10 @@ class MarkingSection extends Component {
 
         this.handleRun = this.handleRun.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.handleAddIssue = this.handleAddIssue.bind(this);
         this.handlePrevNext = this.handlePrevNext.bind(this);
         this.handleShowOutput = this.handleShowOutput.bind(this);
-        this.handleAddIssue = this.handleAddIssue.bind(this);
+        this.handleCheckFiles = this.handleCheckFiles.bind(this);
 
         if (this.props.setRunListener)
             this.props.setRunListener(this.handleRun);
@@ -48,14 +49,8 @@ class MarkingSection extends Component {
             const basePath = state.students[state.index].dirPath + "/";
             var encodings = {}, compileStatus = {};
             for (var i in files) {
-                encodings[files[i]] = getFileEncoding(basePath + files[i]);
-                if (files[i].endsWith(".java")) {
-                    compileStatus[files[i]] = undefined;
-                    this.checkCompileStatus(files[i], basePath);
-                }
-                else {
-                    compileStatus[files[i]] = null;
-                }
+                encodings[files[i]] = null;
+                compileStatus[files[i]] = null;
             }
             return {
                 encodings: encodings,
@@ -105,11 +100,15 @@ class MarkingSection extends Component {
     }
 
     handlePrevNext(event) {
-        if (event.target.className.indexOf("btn-prev") >= 0) {
+        let target = event.target;
+        if (target.tagName === "I") {
+            target = target.parentNode;
+        }
+        if (target.className.indexOf("btn-prev") >= 0) {
             this.setState((state, props) => { return { index: state.index - 1 }; })
             this.studentChanged();
         }
-        else if (event.target.className.indexOf("btn-next") >= 0) {
+        else if (target.className.indexOf("btn-next") >= 0) {
             this.setState((state, props) => { return { index: state.index + 1 }; })
             this.studentChanged();
         }
@@ -138,6 +137,24 @@ class MarkingSection extends Component {
             textInput.val("").focus();
             pointsInput.val("");
         }
+    }
+
+    handleCheckFiles(event) {
+        const basePath = this.state.students[this.state.index].dirPath + "/";
+        const compileStatus = this.state.compileStatus;
+        const encodings = {};
+        const files = this.state.files;
+        for (var i in files) {
+            encodings[files[i]] = getFileEncoding(basePath + files[i]);
+            if (files[i].endsWith(".java")) {
+                compileStatus[files[i]] = undefined;
+                this.checkCompileStatus(files[i], basePath);
+            }
+        }
+        this.setState({
+            compileStatus: compileStatus,
+            encodings: encodings
+        })
     }
 
     renderFiles() {
@@ -273,7 +290,7 @@ class MarkingSection extends Component {
                         </button>
                     </div>
                 </div>
-                <h3 className="heading-margin">Dateien</h3>
+                <h3 className="heading-margin">Dateien <button type="button" className="btn btn-primary" onClick={this.handleCheckFiles}>Prüfen</button></h3>
                 {this.renderFiles()}
                 <hr />
                 <h3 className="heading-margin">Aufgaben ({this.getTotalPoints() || "0"} / {this.getMaxPoints() || "?"})</h3>
@@ -357,6 +374,7 @@ function getEncodingInfo(encoding) {
 }
 
 function getFileEncoding(filePath) {
+    if (filePath.endsWith(".pdf")) return null;
     const fileBuffer = fs.readFileSync(filePath);
     return (jschardet.detect(fileBuffer).encoding || "").toUpperCase();
 }
