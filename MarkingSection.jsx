@@ -66,7 +66,7 @@ class MarkingSection extends Component {
         const compilePath = this.state.binDir + fileName;
         fs.copy(basePath + fileName, compilePath)
             .then(() => {
-                exec(`javac -encoding utf-8 "${compilePath}"`, (err, stdout, stderr) => {
+                exec(`javac -encoding utf-8 -cp "${this.state.binDir}" "${compilePath}"`, (err, stdout, stderr) => {
                     if (err) {
                         console.error("Kompilierfehler für " + fileName + ":\n" + stderr);
                     }
@@ -147,6 +147,11 @@ class MarkingSection extends Component {
         const compileStatus = this.state.compileStatus;
         const encodings = {};
         const files = this.state.files;
+        
+        $.each(this.props.state.compileDependencies, (i, file) => {
+            fs.copySync(file, this.state.binDir + path.basename(file));
+        });
+
         for (var i in files) {
             encodings[files[i]] = getFileEncoding(basePath + files[i]);
             if (files[i].endsWith(".java")) {

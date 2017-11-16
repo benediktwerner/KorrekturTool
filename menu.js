@@ -16,7 +16,11 @@ export default function (app, window) {
                 {
                     label: 'Open Data Directory',
                     accelerator: 'CmdOrCtrl+D',
-                    click: () => window.webContents.send('load-data')
+                    click: () => window.webContents.send('open-data')
+                },
+                {
+                    label: 'Choose Compile Dependencies',
+                    click: () => window.webContents.send('open-compile-deps')
                 }
             ]
         },

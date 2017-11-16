@@ -17,7 +17,8 @@ class App extends Component {
             exercises: {},
             isMarking: false,
             rightViewUrl: "",
-            dataDir: "data"
+            dataDir: "data",
+            compileDependencies: []
         }
 
         this.addSaveLoadListeners();
@@ -209,14 +210,24 @@ class App extends Component {
             });
         });
 
-
-        ipcRenderer.on('load-data', (event, arg) => {
-            dialog.showOpenDialog({properties: ["openDirectory"]}, (fileNames) => {
+        ipcRenderer.on('open-data', (event, arg) => {
+            dialog.showOpenDialog({ properties: ["openDirectory"] }, (fileNames) => {
                 if (!fileNames)
                     return;
 
-		this.setState({
+                this.setState({
                     dataDir: fileNames[0]
+                });
+            });
+        });
+
+        ipcRenderer.on('open-compile-deps', (event, arg) => {
+            dialog.showOpenDialog({ properties: ["openFile", "multiSelections"] }, (fileNames) => {
+                if (!fileNames)
+                    return;
+
+                this.setState({
+                    compileDependencies: fileNames
                 });
             });
         });
