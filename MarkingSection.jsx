@@ -44,7 +44,7 @@ class MarkingSection extends Component {
 
     studentChanged() {
         this.setState((state, props) => {
-            const files = fs.readdirSync(state.students[state.index].dirPath);
+            const files = fs.readdirSync(state.students[state.index].dirPath).filter((name) => name !== "onlinetext_assignsubmission_onlinetext.html");
             const basePath = state.students[state.index].dirPath + "/";
             var encodings = {}, compileStatus = {};
             for (var i in files) {
