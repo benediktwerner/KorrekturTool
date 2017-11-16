@@ -147,7 +147,7 @@ class MarkingSection extends Component {
         const compileStatus = this.state.compileStatus;
         const encodings = {};
         const files = this.state.files;
-        
+
         $.each(this.props.state.compileDependencies, (i, file) => {
             fs.copySync(file, this.state.binDir + path.basename(file));
         });
@@ -259,12 +259,14 @@ class MarkingSection extends Component {
             output += `<td style="text-align: center; vertical-align: middle"><b>${this.props.state.blatt}.${i}</b></td>\n`;
             output += `<td style="text-align: center; vertical-align: middle">${this.getPointsForExercise(i)} / ${(this.props.state.exercises[i] || {}).maxPoints}</td>\n`;
             output += '<td>';
-            $.each(this.props.state.exercises[i].issues, (j, issue) =>  {
+            let perfect = true;
+            $.each(this.props.state.exercises[i].issues, (j, issue) => {
                 if ($(`#issue-${i}-${j}`).data("checked")) {
-                    output += `${issue.text} [${issue.points}]<br>`;
+                    output += `${issue.text} [${issue.points}]<br>\n`;
+                    perfect = false;
                 }
             });
-            output += $('#exercise-' + i + '-text').val();
+            output += $('#exercise-' + i + '-text').val() || (perfect ? "Passt" : "");
             output += '</td>\n</tr>\n';
         }
         output += '</table>\n';
@@ -276,7 +278,12 @@ class MarkingSection extends Component {
             $("textarea.output").select();
             document.execCommand('copy');
         });
-        $("#modal .modal-body").append('<textarea class="form-control output">' + output + "</textarea>");
+        if ($("textarte.output").length) {
+            $("textarea.output").html(output);
+        }
+        else {
+            $("#modal .modal-body").append('<textarea class="form-control output">' + output + "</textarea>");
+        }
         $("textarea.output").css("height", Math.max($(window).height() - 275, 300) + "px");
     }
 
