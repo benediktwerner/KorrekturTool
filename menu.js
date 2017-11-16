@@ -12,6 +12,11 @@ export default function (app, window) {
                     label: 'Load',
                     accelerator: 'CmdOrCtrl+O',
                     click: () => window.webContents.send('load')
+                },
+                {
+                    label: 'Open Data Directory',
+                    accelerator: 'CmdOrCtrl+D',
+                    click: () => window.webContents.send('load-data')
                 }
             ]
         },

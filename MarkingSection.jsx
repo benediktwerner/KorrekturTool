@@ -16,9 +16,9 @@ class MarkingSection extends Component {
     constructor(props) {
         super(props);
 
-        let dataFiles = fs.readdirSync("data");
+        let dataFiles = fs.readdirSync(props.state.dataDir);
         this.state = {
-            students: createStudentsList(dataFiles),
+            students: createStudentsList(props.state.dataDir, dataFiles),
             index: 0,
             files: [],
             compileStatus: {},
@@ -302,15 +302,15 @@ class MarkingSection extends Component {
     }
 }
 
-function createStudentsList(files) {
+function createStudentsList(dataDir, files) {
     var splitName, students = [];
     for (var i in files) {
-        if (!fs.statSync("data/" + files[i]).isDirectory())
+        if (!fs.statSync(dataDir + "/" + files[i]).isDirectory())
             continue;
         splitName = files[i].split("-");
         students.push({
             dirName: files[i],
-            dirPath: "data/" + files[i],
+            dirPath: dataDir + "/" + files[i],
             number: trim(splitName[splitName.length > 1 ? 1 : 0])
         });
     }

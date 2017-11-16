@@ -16,7 +16,8 @@ class App extends Component {
             maxExercise: 0,
             exercises: {},
             isMarking: false,
-            rightViewUrl: ""
+            rightViewUrl: "",
+            dataDir: "data"
         }
 
         this.addSaveLoadListeners();
@@ -197,13 +198,25 @@ class App extends Component {
             });
         });
         ipcRenderer.on('load', (event, arg) => {
-            dialog.showOpenDialog(options, (fileName) => {
-                if (!fileName)
+            dialog.showOpenDialog(options, (fileNames) => {
+                if (!fileNames)
                     return;
 
-                fs.readJson(fileName[0], (err, state) => {
+                fs.readJson(fileNames[0], (err, state) => {
                     if (err) console.error(err);
                     this.setState(state);
+                });
+            });
+        });
+
+
+        ipcRenderer.on('load-data', (event, arg) => {
+            dialog.showOpenDialog({properties: ["openDirectory"]}, (fileNames) => {
+                if (!fileNames)
+                    return;
+
+		this.setState({
+                    dataDir: fileNames[0]
                 });
             });
         });
