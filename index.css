@@ -118,7 +118,7 @@ a.file-link:not([href]):hover {
 }
 
 #control-bar {
-    position: absolute;
+    position: fixed;
     top: 0;
     right: 0;
     color: rgba(0, 0, 0, 0.7);
