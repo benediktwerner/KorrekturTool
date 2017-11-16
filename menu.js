@@ -21,6 +21,11 @@ export default function (app, window) {
                 {
                     label: 'Choose Compile Dependencies',
                     click: () => window.webContents.send('open-compile-deps')
+                },
+                {
+                    label: 'Run',
+                    accelerator: 'F5',
+                    click: () => window.webContents.send('run')
                 }
             ]
         },

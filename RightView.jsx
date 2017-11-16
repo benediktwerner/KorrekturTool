@@ -1,3 +1,4 @@
+import { ipcRenderer } from 'electron';
 import React, { Component } from 'react';
 import fs from 'fs-extra';
 import highlighter from 'node-syntaxhighlighter';
@@ -16,8 +17,9 @@ class RightView extends Component {
             output: []
         }
 
-        rightViewInstance = this;
+        ipcRenderer.on('run', () => this.props.onRun(this.props.src));
 
+        rightViewInstance = this;
         this.handleResize = this.handleResize.bind(this);
     }
 
@@ -82,7 +84,7 @@ class RightView extends Component {
             return <webview className="full-height" src={this.props.src} plugins="true"></webview>;
 
         const content = fs.readFileSync(this.props.src, "utf8");
-        return <div  dangerouslySetInnerHTML={{ __html: highlighter.highlight(content, languageJava) }}></div>;
+        return <div dangerouslySetInnerHTML={{ __html: highlighter.highlight(content, languageJava) }}></div>;
     }
 
     render() {
@@ -101,7 +103,7 @@ class RightView extends Component {
                     <div className="divider" hidden={!this.props.showRunButton}></div>
                     <button title="Run" onClick={() => this.props.onRun(this.props.src)} hidden={!this.props.showRunButton}><i className="fa fa-play"></i> Run</button>
                     <div className="divider" hidden={this.state.output.length === 0}></div>
-                    <button title="Clear" onClick={() => this.setState({output: []})} hidden={this.state.output.length === 0}><i className="fa fa-ban"></i> Clear</button>
+                    <button title="Clear" onClick={() => this.setState({ output: [] })} hidden={this.state.output.length === 0}><i className="fa fa-ban"></i> Clear</button>
                 </div>
             </div>
         );
