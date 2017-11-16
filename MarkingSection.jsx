@@ -262,11 +262,11 @@ class MarkingSection extends Component {
             let perfect = true;
             $.each(this.props.state.exercises[i].issues, (j, issue) => {
                 if ($(`#issue-${i}-${j}`).data("checked")) {
-                    output += `${issue.text} [${issue.points}]<br>\n`;
+                    output += `${issue.text} [${issue.points}]<br />\n`;
                     perfect = false;
                 }
             });
-            output += $('#exercise-' + i + '-text').val() || (perfect ? "Passt" : "");
+            output += $('#exercise-' + i + '-text').val().replace("\n", "<br />") || (perfect ? "Passt" : "");
             output += '</td>\n</tr>\n';
         }
         output += '</table>\n';
