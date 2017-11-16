@@ -145,6 +145,9 @@ class MarkingSection extends Component {
         const files = this.state.files;
         var fileElements = [];
         for (var i in files) {
+            let compileStatus = getCompileInfo(this.state.compileStatus[files[i]]);
+            if (compileStatus)
+                compileStatus = <div className="col">{compileStatus}</div>;
             fileElements.push(<div className="row" key={"file-" + i}>
                 <div className="col">
                     {getFileIcon(files[i])}
@@ -152,8 +155,8 @@ class MarkingSection extends Component {
                         {files[i]}
                     </a>
                 </div>
-                <div className="col">{getCompileInfo(this.state.compileStatus[files[i]])}</div>
-                <div className="col">{getEncodingInfo(this.state.encodings[files[i]])}</div>
+                {compileStatus}
+                <div className="col-4">{getEncodingInfo(this.state.encodings[files[i]])}</div>
             </div>);
         }
         return fileElements;
