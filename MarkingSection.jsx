@@ -286,7 +286,7 @@ class MarkingSection extends Component {
                 <hr />
                 <div className="row">
                     <div className="col">
-                        <h3>{this.state.students[this.state.index].number}</h3>
+                        <h3>{this.state.students[this.state.index].dirName}</h3>
                     </div>
                     <div className="col align-right valign-content-middle">
                         <span className="indexer">{this.state.index + 1} / {this.state.students.length}</span>
@@ -335,11 +335,9 @@ function createStudentsList(dataDir, files) {
     for (var i in files) {
         if (!fs.statSync(dataDir + "/" + files[i]).isDirectory())
             continue;
-        splitName = files[i].split("-");
         students.push({
             dirName: files[i],
-            dirPath: dataDir + "/" + files[i],
-            number: trim(splitName[splitName.length > 1 ? 1 : 0])
+            dirPath: dataDir + "/" + files[i]
         });
     }
     return students;
