@@ -262,7 +262,10 @@ class MarkingSection extends Component {
             let perfect = true;
             $.each(this.props.state.exercises[i].issues, (j, issue) => {
                 if ($(`#issue-${i}-${j}`).data("checked")) {
-                    output += `${issue.text} [${issue.points}]<br />\n`;
+                    if (issue.points)
+                        output += `${issue.text} [${issue.points}]<br />\n`;
+                    else
+                        output += `${issue.text}<br />\n`;
                     perfect = false;
                 }
             });

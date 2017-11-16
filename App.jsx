@@ -103,7 +103,7 @@ class App extends Component {
     }
 
     handleIssueAdd(exercise, text, points) {
-        if (!text || !points)
+        if (!text)
             return false;
         this.setState((state, props) => {
             const exercises = state.exercises;
