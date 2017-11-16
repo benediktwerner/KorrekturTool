@@ -261,7 +261,7 @@ class MarkingSection extends Component {
             output += '<td>';
             let perfect = true;
             $.each(this.props.state.exercises[i].issues, (j, issue) => {
-                if ($(`#issue-${i}-${j}`).data("checked")) {
+                if ($(`#issue-${i}-${j}`).attr("data-checked") === "true") {
                     if (issue.points)
                         output += `${issue.text} [${issue.points}]<br />\n`;
                     else
@@ -281,8 +281,10 @@ class MarkingSection extends Component {
             $("textarea.output").select();
             document.execCommand('copy');
         });
-        if ($("textarte.output").length) {
-            $("textarea.output").html(output);
+        console.log(output);
+        if ($("textarea.output").length) {
+            console.log("setting output");
+            $("textarea.output").text(output);
         }
         else {
             $("#modal .modal-body").append('<textarea class="form-control output">' + output + "</textarea>");
