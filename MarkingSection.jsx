@@ -16,7 +16,7 @@ class MarkingSection extends Component {
     constructor(props) {
         super(props);
 
-        var dataFiles = fs.readdirSync("data");
+        let dataFiles = fs.readdirSync("data");
         this.state = {
             students: createStudentsList(dataFiles),
             index: 0,
@@ -25,13 +25,14 @@ class MarkingSection extends Component {
             encodings: {},
             binDir: fs.mkdtempSync(os.tmpdir() + "/korrekturToolTmp") + "/",
             points: {},
-            testButton: false
+            issuePoints: {}
         }
 
         this.handleRun = this.handleRun.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handlePrevNext = this.handlePrevNext.bind(this);
         this.handleShowOutput = this.handleShowOutput.bind(this);
+        this.handleAddIssue = this.handleAddIssue.bind(this);
 
         if (this.props.setRunListener)
             this.props.setRunListener(this.handleRun);
@@ -60,7 +61,8 @@ class MarkingSection extends Component {
                 encodings: encodings,
                 compileStatus: compileStatus,
                 files: files,
-                points: {}
+                points: {},
+                issuePoints: {}
             };
         });
     }
@@ -116,13 +118,26 @@ class MarkingSection extends Component {
     handleChange(event) {
         const exercise = event.target.dataset.exercise;
         let newValue = parseFloat(event.target.value, 10);
-        if (newValue < 0) newValue = 0;
-        if (newValue > this.props.state.exercises[exercise].maxPoints) newValue = this.props.state.exercises[exercise].maxPoints;
+        if (newValue > 0) newValue = 0;
         this.setState((state, props) => {
             const points = state.points;
             points[exercise] = newValue;
             return { points: points };
         });
+    }
+
+    handleAddIssue(event) {
+        if (event.keyCode && event.keyCode !== 13)
+            return;
+        if (this.props.onIssueAdd) {
+            const parent = $(event.target).parents(".issue-input");
+            const textInput = parent.find("input[type='text']");
+            const pointsInput = parent.find("input[type='number']");
+            if (!this.props.onIssueAdd(parent.data("exercise"), textInput.val(), pointsInput.val()))
+                return;
+            textInput.val("").focus();
+            pointsInput.val("");
+        }
     }
 
     renderFiles() {
@@ -144,22 +159,61 @@ class MarkingSection extends Component {
         return fileElements;
     }
 
+    renderIssueInputs(exercise) {
+        let inputs = [];
+        $.each(this.props.state.exercises[exercise].issues, (i, issue) => {
+            inputs.push(
+                <IssueInput key={"issue-" + exercise + "-" + i} exercise={exercise} id={i} text={issue.text} points={issue.points}
+                    onChange={(key, value) => {
+                        if (key === "checked") {
+                            const exerc = exercise;
+                            this.setState((state, props) => {
+                                const issuePoints = state.issuePoints;
+                                issuePoints[exerc] = (issuePoints[exerc] || 0) + (value ? 1 : -1) * this.props.state.exercises[exerc].issues[i].points;
+                                return {
+                                    issuePoints: issuePoints
+                                };
+                            });
+                        }
+                        else if (this.props.onIssueChange)
+                            this.props.onIssueChange(exercise, i, key, value);
+                    }}
+                    onDelete={() => {
+                        if (this.props.onIssueDelete) {
+                            this.props.onIssueDelete(exercise, i);
+                        }
+                    }} />
+            );
+        });
+        return inputs;
+    }
+
     renderExercises() {
         if (this.props.state.minExercise <= 0 || this.props.state.maxExercise <= 0)
             return "";
 
-        var exercises = [];
-        for (var i = this.props.state.minExercise; i <= this.props.state.maxExercise; i++) {
+        let exercises = [];
+        for (let i = this.props.state.minExercise; i <= this.props.state.maxExercise; i++) {
             let points = this.state.points[i];
             if (points === undefined || points === null || isNaN(points)) points = "";
             exercises.push(<div key={"exercise-" + i}>
                 <h4 className="heading-margin">Aufgabe {this.props.state.blatt}.{i}</h4>
                 <div className="row">
-                    <div className="col form-inline points">
-                        <input type="number" className="form-control form-control-sm" data-exercise={i} onChange={this.handleChange} value={points}></input> / {this.props.state.exercises[i].maxPoints || 0}
+                    <div className="col points">
+                        {this.getPointsForExercise(i)} / {this.props.state.exercises[i].maxPoints || 0}
+                        <input type="number" className="form-control form-control-sm" data-exercise={i} onChange={this.handleChange} value={points}></input>
                     </div>
                     <div className="col">
-                        <IssueInput text="Encoding falsch" points="-1" value={this.state.testButton} onClick={() => this.setState({testButton: !this.state.testButton})} />
+                        <div className="list-group">
+                            {this.renderIssueInputs(i)}
+                            <div className="list-group-item issue-input editable" data-exercise={i}>
+                                <div className="form-row">
+                                    <div className="col-1 add-issue" onClick={this.handleAddIssue}><i className="fa fa-plus"></i></div>
+                                    <div className="col"><input className="form-control" type="text" onKeyUp={this.handleAddIssue}></input></div>
+                                    <div className="col-2"><input className="form-control" type="number" onKeyUp={this.handleAddIssue}></input></div>
+                                </div>
+                            </div>
+                        </div>
                         <textarea id={"exercise-" + i + "-text"} className="form-control"></textarea>
                     </div>
                 </div>
@@ -175,9 +229,15 @@ class MarkingSection extends Component {
         for (let i = this.props.state.minExercise; i <= this.props.state.maxExercise; i++) {
             output += '<tr style="border-bottom: 1px solid #333">\n';
             output += `<td style="text-align: center; vertical-align: middle"><b>${this.props.state.blatt}.${i}</b></td>\n`;
-            output += `<td style="text-align: center; vertical-align: middle">${this.state.points[i]} / ${this.props.state.exercises[i].maxPoints}</td>\n`;
-            output += `<td>${$('#exercise-' + i + '-text').val()}</td>\n`;
-            output += '</tr>\n';
+            output += `<td style="text-align: center; vertical-align: middle">${this.getPointsForExercise(i)} / ${(this.props.state.exercises[i] || {}).maxPoints}</td>\n`;
+            output += '<td>';
+            $.each(this.props.state.exercises[i].issues, (j, issue) =>  {
+                if ($(`#issue-${i}-${j}`).data("checked")) {
+                    output += `${issue.text} [${issue.points}]<br>`;
+                }
+            });
+            output += $('#exercise-' + i + '-text').val();
+            output += '</td>\n</tr>\n';
         }
         output += '</table>\n';
         output += '<br />\n';
@@ -222,18 +282,23 @@ class MarkingSection extends Component {
 
     getTotalPoints() {
         var points = 0;
-        for (var i in this.state.points) {
-            points += this.state.points[i];
+        for (let i in this.props.state.exercises) {
+            points += this.getPointsForExercise(i);
         }
         return points;
     }
 
     getMaxPoints() {
         var maxPoints = 0;
-        for (var i in this.props.state.exercises) {
+        for (let i in this.props.state.exercises) {
             maxPoints += this.props.state.exercises[i].maxPoints;
         }
         return maxPoints;
+    }
+
+    getPointsForExercise(exercise) {
+        let diff = (this.state.points[exercise] || 0) + (this.state.issuePoints[exercise] || 0);
+        return Math.max((this.props.state.exercises[exercise].maxPoints || 0) + (diff < 0 ? diff : 0), 0);
     }
 }
 

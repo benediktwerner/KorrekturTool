@@ -24,6 +24,9 @@ class App extends Component {
         this.handleShowFile = this.handleShowFile.bind(this);
         this.handleChangeMinMaxExercise = this.handleChangeMinMaxExercise.bind(this);
         this.handleChangeExerciseMaxPoints = this.handleChangeExerciseMaxPoints.bind(this);
+        this.handleIssueAdd = this.handleIssueAdd.bind(this);
+        this.handleIssueDelete = this.handleIssueDelete.bind(this);
+        this.handleIssueChange = this.handleIssueChange.bind(this);
     }
 
     handleChangeExerciseMaxPoints(event) {
@@ -32,9 +35,7 @@ class App extends Component {
         if (value < 0) value = 0;
         this.setState(function (state, props) {
             let exercises = state.exercises;
-            exercises[key] = {
-                maxPoints: value
-            };
+            exercises[key].maxPoints = value;
             return {
                 exercises: exercises
             };
@@ -53,12 +54,13 @@ class App extends Component {
         }
         this.setState(function (state, props) {
             let exercises = {};
-            const defaultExercise = { maxPoints: 0 };
+            const defaultExercise = { maxPoints: 0, issues: [] };
             if (newMinExercise === null) newMinExercise = state.minExercise;
             if (newMaxExercise === null) newMaxExercise = state.maxExercise;
             for (let i = newMinExercise; i <= newMaxExercise; i++) {
                 exercises[i] = {
-                    maxPoints: (state.exercises[i] || defaultExercise).maxPoints
+                    maxPoints: (state.exercises[i] || defaultExercise).maxPoints,
+                    issues: (state.exercises[i] || defaultExercise).issues
                 };
             }
             return {
@@ -98,10 +100,53 @@ class App extends Component {
         });
     }
 
+    handleIssueAdd(exercise, text, points) {
+        if (!text || !points)
+            return false;
+        this.setState((state, props) => {
+            const exercises = state.exercises;
+            exercises[exercise].issues.push({
+                text: text,
+                points: parseFloat(points, 10)
+            })
+            return {
+                exercises: exercises
+            }
+        });
+        return true;
+    }
+
+    handleIssueDelete(exercise, index) {
+        this.setState((state, props) => {
+            const exercises = state.exercises;
+            exercises[exercise].issues.splice(index, index + 1);
+            return {
+                exercises: exercises
+            }
+        });
+    }
+
+    handleIssueChange(exercise, index, key, value) {
+        this.setState((state, props) => {
+            const exercises = state.exercises;
+            exercises[exercise].issues[index][key] = key === "points" ? parseFloat(value, 10) : value;
+            return {
+                exercises: exercises
+            }
+        });
+    }
+
     render() {
         let markingSection;
         if (this.state.isMarking)
-            markingSection = <MarkingSection state={this.state} onShowFile={this.handleShowFile} setRunListener={(run) => this.onRun = run} />;
+            markingSection = <MarkingSection
+                state={this.state}
+                onShowFile={this.handleShowFile}
+                onIssueChange={this.handleIssueChange}
+                onIssueAdd={this.handleIssueAdd}
+                onIssueDelete={this.handleIssueDelete}
+                setRunListener={(run) => this.onRun = run}
+            />;
         else markingSection = <button type="button" className="btn btn-primary" onClick={() => { this.setState({ isMarking: true }) }}>Bewerten</button>;
 
         return (

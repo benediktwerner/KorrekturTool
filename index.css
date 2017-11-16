@@ -166,3 +166,52 @@ a.file-link:not([href]):hover {
 .error {
     color: red;
 }
+
+.issue-input .form-row {
+    margin-top: 0;
+}
+
+.issue-input .col-1 {
+    max-width: 35px;
+}
+
+.issue-input .col-2, .issue-input .col-2 input {
+    text-align: right;
+}
+
+.issue-input .col-2 input::-webkit-inner-spin-button,
+.issue-input .col-2 input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.issue-input:not(.editable) .col {
+    padding-left: 18px;
+}
+
+.issue-input:not(.editable) .col-2 {
+    padding-right: 18px;
+}
+
+.issue-input input {
+    margin-top: -7px;
+    margin-bottom: -7px;
+}
+
+.issue-input .add-issue {
+    cursor: pointer;
+    color: #007bff;
+}
+
+.issue-input .add-issue:hover {
+    color: #0056b3;
+}
+
+.issue-input .delete-issue {
+    cursor: pointer;
+    color: #dc3545;
+}
+
+.issue-input .delete-issue:hover {
+    color: #c82333;
+}
