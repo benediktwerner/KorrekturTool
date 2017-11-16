@@ -67,6 +67,9 @@ class MarkingSection extends Component {
         fs.copy(basePath + fileName, compilePath)
             .then(() => {
                 exec(`javac -encoding utf-8 "${compilePath}"`, (err, stdout, stderr) => {
+                    if (err) {
+                        console.error("Kompilierfehler für " + fileName + ":\n" + stderr);
+                    }
                     this.setState((state, props) => {
                         var compileStatus = state.compileStatus;
                         compileStatus[fileName] = err ? "error" : "success";
