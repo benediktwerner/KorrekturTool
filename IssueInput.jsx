@@ -17,15 +17,21 @@ class IssueInput extends Component {
                 this.setState({ isEditing: false });
         });
 
+        if (this.props.resetListeners !== undefined) {
+            this.props.resetListeners.push(() => this.setState({ checked: false }));
+        }
+
         this.handleClick = this.handleClick.bind(this);
         this.handleChange = this.handleChange.bind(this);
     }
 
     componentWillReceiveProps(props) {
-        this.setState({
-            text: props.text,
-            points: props.points,
-            checked: (props.checked === undefined) ? this.state.checked : props.checked
+        this.setState((state, props) => {
+            return {
+                text: props.text,
+                points: props.points,
+                checked: (props.checked === undefined) ? state.checked : props.checked
+            };
         });
     }
 

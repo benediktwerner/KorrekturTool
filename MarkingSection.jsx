@@ -32,11 +32,13 @@ class MarkingSection extends Component {
         this.handleChange = this.handleChange.bind(this);
         this.handleAddIssue = this.handleAddIssue.bind(this);
         this.handlePrevNext = this.handlePrevNext.bind(this);
+        this.handleSaveOutput = this.handleSaveOutput.bind(this);
         this.handleShowOutput = this.handleShowOutput.bind(this);
         this.handleCheckFiles = this.handleCheckFiles.bind(this);
 
         if (this.props.setRunListener)
             this.props.setRunListener(this.handleRun);
+        this.resetListeners = [];
     }
 
     componentDidMount() {
@@ -60,6 +62,10 @@ class MarkingSection extends Component {
                 issuePoints: {}
             };
         });
+        $.each(this.resetListeners, (i, e) => e());
+        for (let i = this.props.state.minExercise; i <= this.props.state.maxExercise; i++) {
+            $("#exercise-" + i + "-text").val("");
+        }
     }
 
     checkCompileStatus(fileName, basePath) {
@@ -210,7 +216,8 @@ class MarkingSection extends Component {
                         if (this.props.onIssueDelete) {
                             this.props.onIssueDelete(exercise, i);
                         }
-                    }} />
+                    }}
+                    resetListeners={this.resetListeners} />
             );
         });
         return inputs;
@@ -225,7 +232,10 @@ class MarkingSection extends Component {
             let points = this.state.points[i];
             if (points === undefined || points === null || isNaN(points)) points = "";
             exercises.push(<div key={"exercise-" + i}>
-                <h4 className="heading-margin">Aufgabe {this.props.state.blatt}.{i}</h4>
+                <h4 className="heading-margin">
+                    Aufgabe {this.props.state.blatt}.{i}
+                    <button type="button" className="btn btn-outline-primary" onClick={() => { if (this.props.onSortIssues) this.props.onSortIssues(i) }}><i className="fa fa-sort-amount-asc"></i></button>
+                </h4>
                 <div className="row">
                     <div className="col points">
                         {this.getPointsForExercise(i)} / {this.props.state.exercises[i].maxPoints || 0}
@@ -250,7 +260,7 @@ class MarkingSection extends Component {
         return exercises;
     }
 
-    handleShowOutput(event) {
+    getHTMLOutput() {
         let output = '<table style="border: 2px solid #333">\n';
         output += '<tr style="border: 2px solid black"><th><b>Aufgabe</b></th><th><b>Bewertung</b></th><th><b>Kommentar</b></th></tr>\n';
 
@@ -275,21 +285,34 @@ class MarkingSection extends Component {
         output += '</table>\n';
         output += '<br />\n';
         output += `<p><b>Gesamt (Σ): ${this.getTotalPoints()} von ${this.getMaxPoints()}</b></p>`;
+        return output;
+    }
 
+    handleShowOutput(event) {
         $("#modal .modal-title").text("Output");
         $("#modal .btn-primary").text("Kopieren").click(() => {
             $("textarea.output").select();
             document.execCommand('copy');
         });
-        console.log(output);
         if ($("textarea.output").length) {
             console.log("setting output");
-            $("textarea.output").text(output);
+            $("textarea.output").text(this.getHTMLOutput());
         }
         else {
-            $("#modal .modal-body").append('<textarea class="form-control output">' + output + "</textarea>");
+            $("#modal .modal-body").append('<textarea class="form-control output">' + this.getHTMLOutput() + "</textarea>");
         }
         $("textarea.output").css("height", Math.max($(window).height() - 275, 300) + "px");
+    }
+
+    handleSaveOutput(event) {
+        dialog.showSaveDialog({ defaultPath: this.state.students[this.state.index].dirName + ".txt" }, (fileName) => {
+            if (fileName === undefined)
+                return;
+
+            fs.writeFile(fileName, this.getHTMLOutput(), err => {
+                if (err) console.error(err)
+            });
+        });
     }
 
     render() {
@@ -316,6 +339,7 @@ class MarkingSection extends Component {
                 <h3 className="heading-margin">Aufgaben ({this.getTotalPoints() || "0"} / {this.getMaxPoints() || "?"})</h3>
                 {this.renderExercises()}
                 <button className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={this.handleShowOutput}>HTML</button>
+                <button className="btn btn-primary" onClick={this.handleSaveOutput}>Save</button>
             </div>
         );
     }

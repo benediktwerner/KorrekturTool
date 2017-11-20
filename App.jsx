@@ -29,6 +29,7 @@ class App extends Component {
         this.handleIssueAdd = this.handleIssueAdd.bind(this);
         this.handleIssueDelete = this.handleIssueDelete.bind(this);
         this.handleIssueChange = this.handleIssueChange.bind(this);
+        this.handleSortIssues = this.handleSortIssues.bind(this);
     }
 
     handleChangeExerciseMaxPoints(event) {
@@ -138,6 +139,16 @@ class App extends Component {
         });
     }
 
+    handleSortIssues(exercise) {
+        this.setState((state, props) => {
+            const exercises = state.exercises;
+            exercises[exercise].issues.sort((a, b) => a.text.localeCompare(b.text));
+            return {
+                exercises: exercises
+            };
+        });
+    }
+
     render() {
         let markingSection;
         if (this.state.isMarking)
@@ -147,6 +158,7 @@ class App extends Component {
                 onIssueChange={this.handleIssueChange}
                 onIssueAdd={this.handleIssueAdd}
                 onIssueDelete={this.handleIssueDelete}
+                onSortIssues={this.handleSortIssues}
                 setRunListener={(run) => this.onRun = run}
             />;
         else markingSection = <button type="button" className="btn btn-primary" onClick={() => { this.setState({ isMarking: true }) }}>Bewerten</button>;

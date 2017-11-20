@@ -106,8 +106,7 @@ a.file-link:not([href]):hover {
 }
 
 .points>input.form-control {
-    width: 40px;
-    margin-right: 5px;
+    margin-top: 5px;
     text-align: right;
 }
 
@@ -175,7 +174,8 @@ a.file-link:not([href]):hover {
     max-width: 35px;
 }
 
-.issue-input .col-2, .issue-input .col-2 input {
+.issue-input .col-2,
+.issue-input .col-2 input {
     text-align: right;
 }
 
@@ -215,3 +215,8 @@ a.file-link:not([href]):hover {
 .issue-input .delete-issue:hover {
     color: #c82333;
 }
+
+h2 button, h3 button, h4 button, h5 button {
+    margin-left: 7px;
+}
+
