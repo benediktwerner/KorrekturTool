@@ -29,12 +29,13 @@ class MarkingSection extends Component {
         }
 
         this.handleRun = this.handleRun.bind(this);
-        this.handleChange = this.handleChange.bind(this);
         this.handleAddIssue = this.handleAddIssue.bind(this);
         this.handlePrevNext = this.handlePrevNext.bind(this);
+        this.handleTextChange = this.handleTextChange.bind(this);
         this.handleSaveOutput = this.handleSaveOutput.bind(this);
         this.handleShowOutput = this.handleShowOutput.bind(this);
         this.handleCheckFiles = this.handleCheckFiles.bind(this);
+        this.handlePointsChange = this.handlePointsChange.bind(this);
 
         if (this.props.setRunListener)
             this.props.setRunListener(this.handleRun);
@@ -123,13 +124,28 @@ class MarkingSection extends Component {
         }
     }
 
-    handleChange(event) {
+    handlePointsChange(event) {
         const exercise = event.target.dataset.exercise;
         let newValue = parseFloat(event.target.value, 10);
         if (newValue > 0) newValue = 0;
         this.setState((state, props) => {
             const points = state.points;
             points[exercise] = newValue;
+            return { points: points };
+        });
+    }
+
+    handleTextChange(event) {
+        let newPoints = 0;
+        let array = event.target.value.match(/.*\[.*\]/g);
+        for (let i in array) {
+            let s = array[i].match(/\[.*\]/)[0].replace("[", "").replace("]", "").replace(",", ".");
+            newPoints += parseFloat(s, 10);
+        }
+        const exercise = event.target.dataset.exercise;
+        this.setState((state, props) => {
+            const points = state.points;
+            points[exercise] = newPoints;
             return { points: points };
         });
     }
@@ -239,7 +255,7 @@ class MarkingSection extends Component {
                 <div className="row">
                     <div className="col points">
                         {this.getPointsForExercise(i)} / {this.props.state.exercises[i].maxPoints || 0}
-                        <input type="number" className="form-control form-control-sm" data-exercise={i} onChange={this.handleChange} value={points}></input>
+                        <input type="number" className="form-control form-control-sm" data-exercise={i} onChange={this.handlePointsChange} value={points}></input>
                     </div>
                     <div className="col">
                         <div className="list-group">
@@ -252,7 +268,7 @@ class MarkingSection extends Component {
                                 </div>
                             </div>
                         </div>
-                        <textarea id={"exercise-" + i + "-text"} className="form-control"></textarea>
+                        <textarea id={"exercise-" + i + "-text"} className="form-control" data-exercise={i} onChange={this.handleTextChange}></textarea>
                     </div>
                 </div>
             </div>);
