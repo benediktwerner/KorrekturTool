@@ -84,7 +84,7 @@ class RightView extends Component {
             return <webview className="full-height" src={this.props.src} plugins="true"></webview>;
 
         const content = fs.readFileSync(this.props.src, "utf8");
-        return <div dangerouslySetInnerHTML={{ __html: highlighter.highlight(content, languageJava) }}></div>;
+        return <div id="code-view" dangerouslySetInnerHTML={{ __html: highlighter.highlight(content, languageJava) }}></div>;
     }
 
     render() {
@@ -92,19 +92,22 @@ class RightView extends Component {
         if (this.state.width === 0 || !this.props.src)
             style.display = "none";
         return (
-            <div className="col right-view" style={style}>
-                <div id="resize-handle"></div>
-                {this.renderContent()}
-                <pre id="console-output">
-                    {this.renderOutput()}
-                </pre>
-                <div id="control-bar">
-                    <button title="Close" onClick={() => this.setState({ width: 0 })}><i className="fa fa-times"></i></button>
-                    <div className="divider" hidden={!this.props.showRunButton}></div>
-                    <button title="Run" onClick={() => this.props.onRun(this.props.src)} hidden={!this.props.showRunButton}><i className="fa fa-play"></i> Run</button>
-                    <div className="divider" hidden={this.state.output.length === 0}></div>
-                    <button title="Clear" onClick={() => this.setState({ output: [] })} hidden={this.state.output.length === 0}><i className="fa fa-ban"></i> Clear</button>
+            <div>
+                <div className="right-view" style={style}>
+                    <div id="resize-handle"></div>
+                    {this.renderContent()}
+                    <pre id="console-output">
+                        {this.renderOutput()}
+                    </pre>
+                    <div id="control-bar">
+                        <button title="Close" onClick={() => this.setState({ width: 0 })}><i className="fa fa-times"></i></button>
+                        <div className="divider" hidden={!this.props.showRunButton}></div>
+                        <button title="Run" onClick={() => this.props.onRun(this.props.src)} hidden={!this.props.showRunButton}><i className="fa fa-play"></i> Run</button>
+                        <div className="divider" hidden={this.state.output.length === 0}></div>
+                        <button title="Clear" onClick={() => this.setState({ output: [] })} hidden={this.state.output.length === 0}><i className="fa fa-ban"></i> Clear</button>
+                    </div>
                 </div>
+                <div style={{ width: (this.state.width === 0 || !this.props.src) ? 0 : this.state.width + "px" }}></div>
             </div>
         );
     }
