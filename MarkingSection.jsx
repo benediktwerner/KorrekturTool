@@ -295,7 +295,7 @@ class MarkingSection extends Component {
                     perfect = false;
                 }
             });
-            output += $('#exercise-' + i + '-text').val().replace("\n", "<br />") || (perfect ? "Passt" : "");
+            output += $('#exercise-' + i + '-text').val().replace(/\n/g, "<br />") || (perfect ? "Passt" : "");
             output += '</td>\n</tr>\n';
         }
         output += '</table>\n';
