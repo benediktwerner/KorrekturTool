@@ -247,7 +247,7 @@ class MarkingSection extends Component {
         for (let i = this.props.state.minExercise; i <= this.props.state.maxExercise; i++) {
             let points = this.state.points[i];
             if (points === undefined || points === null || isNaN(points)) points = "";
-            exercises.push(<div key={"exercise-" + i}>
+            exercises.push(<div key={"exercise-" + i} className="exercise">
                 <h4 className="heading-margin">
                     Aufgabe {this.props.state.blatt}.{i}
                     <button type="button" className="btn btn-outline-primary" onClick={() => { if (this.props.onSortIssues) this.props.onSortIssues(i) }}><i className="fa fa-sort-amount-asc"></i></button>
@@ -311,7 +311,6 @@ class MarkingSection extends Component {
             document.execCommand('copy');
         });
         if ($("textarea.output").length) {
-            console.log("setting output");
             $("textarea.output").text(this.getHTMLOutput());
         }
         else {

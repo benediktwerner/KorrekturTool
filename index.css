@@ -226,3 +226,14 @@ a.file-link:not([href]):hover {
 h2 button, h3 button, h4 button, h5 button {
     margin-left: 7px;
 }
+
+.exercise .list-group-item:last-child {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.exercise textarea {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-top: 0;
+}
