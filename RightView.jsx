@@ -88,7 +88,7 @@ class RightView extends Component {
     }
 
     render() {
-        var style = { maxWidth: this.state.width + "px" };
+        var style = { width: this.state.width + "px" };
         if (this.state.width === 0 || !this.props.src)
             style.display = "none";
         return (
@@ -107,7 +107,7 @@ class RightView extends Component {
                         <button title="Clear" onClick={() => this.setState({ output: [] })} hidden={this.state.output.length === 0}><i className="fa fa-ban"></i> Clear</button>
                     </div>
                 </div>
-                <div style={{ width: (this.state.width === 0 || !this.props.src) ? 0 : this.state.width + "px" }}></div>
+                <div style={style}></div>
             </div>
         );
     }
