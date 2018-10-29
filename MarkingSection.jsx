@@ -75,6 +75,7 @@ class MarkingSection extends Component {
                 exec(`javac -encoding utf-8 -cp "${this.state.binDir}" "${compilePath}"`, (err, stdout, stderr) => {
                     if (err) {
                         console.error("Kompilierfehler für " + fileName + ":\n" + stderr);
+                        dialog.showErrorBox("Kompilierfehler", fileName + " konnte nicht kompiliert werden:\n" + stderr);
                     }
                     this.setState((state, props) => {
                         let compileStatus = state.compileStatus;
@@ -95,7 +96,7 @@ class MarkingSection extends Component {
             return;
         }
 
-        exec(`java -cp "${this.state.binDir}" ${fileName.replace(".java", "")}`, (err, stdout, stderr) => {
+        exec(`java -Dfile.encoding=UTF-8 -cp "${this.state.binDir}" ${fileName.replace(".java", "")}`, (err, stdout, stderr) => {
             if (err) {
                 console.error(err);
                 console.error(stderr);
