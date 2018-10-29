@@ -1,8 +1,8 @@
 import { remote } from 'electron';
 import React, { Component } from 'react';
 import fs from 'fs-extra';
-import $, { trim } from 'jquery';
-import jschardet from 'jschardet';
+import $ from 'jquery';
+import chardet from 'chardet';
 import { exec } from 'child_process';
 import os from 'os';
 import path from 'path';
@@ -49,7 +49,6 @@ class MarkingSection extends Component {
     studentChanged() {
         this.setState((state, props) => {
             const files = fs.readdirSync(state.students[state.index].dirPath).filter((name) => name !== "onlinetext_assignsubmission_onlinetext.html");
-            const basePath = state.students[state.index].dirPath + "/";
             let encodings = {}, compileStatus = {};
             for (let i in files) {
                 encodings[files[i]] = null;
@@ -430,10 +429,31 @@ function getEncodingInfo(encoding) {
     return <span><i className="fa fa-times-circle fa-padding"></i>{encoding}</span>;
 }
 
+function isASCIIEncoded(buffer) {
+    for (let c of buffer) {
+        if (c > 127)
+            return false;
+    }
+    return true;
+}
+
+function hasBOMHeader(buffer) {
+    return buffer[0] == 239 && buffer[1] == 187 && buffer[2] == 191;
+}
+
 function getFileEncoding(filePath) {
-    if (filePath.endsWith(".pdf")) return null;
+    if (filePath.endsWith(".pdf"))
+        return null;
+
     const fileBuffer = fs.readFileSync(filePath);
-    return (jschardet.detect(fileBuffer).encoding || "").toUpperCase();
+    if (isASCIIEncoded(fileBuffer))
+        return "ASCII";
+
+    let encoding = chardet.detect(fileBuffer);
+    if (encoding == "UTF-8" && hasBOMHeader(fileBuffer))
+        return "UTF-8 with BOM";
+
+    return encoding;
 }
 
 export default MarkingSection;
