@@ -88,7 +88,7 @@ class RightView extends Component {
     }
 
     render() {
-        var style = { width: this.state.width + "px" };
+        let style = { width: this.state.width + "px" };
         if (this.state.width === 0 || !this.props.src)
             style.display = "none";
         return (

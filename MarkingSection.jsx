@@ -50,8 +50,8 @@ class MarkingSection extends Component {
         this.setState((state, props) => {
             const files = fs.readdirSync(state.students[state.index].dirPath).filter((name) => name !== "onlinetext_assignsubmission_onlinetext.html");
             const basePath = state.students[state.index].dirPath + "/";
-            var encodings = {}, compileStatus = {};
-            for (var i in files) {
+            let encodings = {}, compileStatus = {};
+            for (let i in files) {
                 encodings[files[i]] = null;
                 compileStatus[files[i]] = null;
             }
@@ -78,7 +78,7 @@ class MarkingSection extends Component {
                         console.error("Kompilierfehler für " + fileName + ":\n" + stderr);
                     }
                     this.setState((state, props) => {
-                        var compileStatus = state.compileStatus;
+                        let compileStatus = state.compileStatus;
                         compileStatus[fileName] = err ? "error" : "success";
                         return {
                             compileStatus: compileStatus
@@ -174,7 +174,7 @@ class MarkingSection extends Component {
             fs.copySync(file, this.state.binDir + path.basename(file));
         });
 
-        for (var i in files) {
+        for (let i in files) {
             encodings[files[i]] = getFileEncoding(basePath + files[i]);
             if (files[i].endsWith(".java")) {
                 compileStatus[files[i]] = undefined;
@@ -190,8 +190,8 @@ class MarkingSection extends Component {
     renderFiles() {
         const basePath = this.state.students[this.state.index].dirPath + "/";
         const files = this.state.files;
-        var fileElements = [];
-        for (var i in files) {
+        let fileElements = [];
+        for (let i in files) {
             let compileStatus = getCompileInfo(this.state.compileStatus[files[i]]);
             if (compileStatus)
                 compileStatus = <div className="col">{compileStatus}</div>;
@@ -360,7 +360,7 @@ class MarkingSection extends Component {
     }
 
     getTotalPoints() {
-        var points = 0;
+        let points = 0;
         for (let i in this.props.state.exercises) {
             points += this.getPointsForExercise(i);
         }
@@ -368,7 +368,7 @@ class MarkingSection extends Component {
     }
 
     getMaxPoints() {
-        var maxPoints = 0;
+        let maxPoints = 0;
         for (let i in this.props.state.exercises) {
             maxPoints += this.props.state.exercises[i].maxPoints;
         }
@@ -382,8 +382,8 @@ class MarkingSection extends Component {
 }
 
 function createStudentsList(dataDir, files) {
-    var splitName, students = [];
-    for (var i in files) {
+    let students = [];
+    for (let i in files) {
         if (!fs.statSync(dataDir + "/" + files[i]).isDirectory())
             continue;
         students.push({
