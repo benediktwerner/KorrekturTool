@@ -338,7 +338,7 @@ class MarkingSection extends Component {
                     <div className="col">
                         <h3>{this.state.students[this.state.index].dirName}</h3>
                     </div>
-                    <div className="col align-right valign-content-middle">
+                    <div className="col-auto align-right valign-content-middle">
                         <span className="indexer">{this.state.index + 1} / {this.state.students.length}</span>
                         <button type="button" className="btn btn-outline-primary btn-prev" onClick={this.handlePrevNext} disabled={this.state.index <= 0}>
                             <i className="fa fa-arrow-left fa-lg"></i>Prev
