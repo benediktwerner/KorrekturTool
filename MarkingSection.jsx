@@ -333,10 +333,9 @@ class MarkingSection extends Component {
     render() {
         return (
             <div className="marking-section">
-                <hr />
                 <div className="row">
                     <div className="col">
-                        <h3>{this.state.students[this.state.index].dirName}</h3>
+                        <h3>{this.state.students[this.state.index].dirName.split("_")[0]}</h3>
                     </div>
                     <div className="col-auto align-right valign-content-middle">
                         <span className="indexer">{this.state.index + 1} / {this.state.students.length}</span>
@@ -354,7 +353,7 @@ class MarkingSection extends Component {
                 <h3 className="heading-margin">Aufgaben ({this.getTotalPoints() || "0"} / {this.getMaxPoints() || "?"})</h3>
                 {this.renderExercises()}
                 <button className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={this.handleShowOutput}>HTML</button>
-                <button className="btn btn-primary" onClick={this.handleSaveOutput}>Save</button>
+                <button className="btn btn-primary" onClick={this.handleSaveOutput}>Speichern</button>
             </div>
         );
     }

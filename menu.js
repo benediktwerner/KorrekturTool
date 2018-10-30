@@ -4,26 +4,30 @@ export default function (app, window) {
             label: 'File',
             submenu: [
                 {
-                    label: 'Save',
+                    label: 'Konfigurieren',
+                    click: () => window.webContents.send('configure')
+                },
+                {
+                    label: 'Konfiguration speichern',
                     accelerator: 'CmdOrCtrl+S',
                     click: () => window.webContents.send('save')
                 },
                 {
-                    label: 'Load',
+                    label: 'Konfiguration laden',
                     accelerator: 'CmdOrCtrl+O',
                     click: () => window.webContents.send('load')
                 },
                 {
-                    label: 'Open Data Directory',
+                    label: 'Abgabe-Verzeichnis wählen',
                     accelerator: 'CmdOrCtrl+D',
                     click: () => window.webContents.send('open-data')
                 },
                 {
-                    label: 'Choose Compile Dependencies',
+                    label: 'Kompile-Abhängigkeiten wählen',
                     click: () => window.webContents.send('open-compile-deps')
                 },
                 {
-                    label: 'Run',
+                    label: 'Ausführen',
                     accelerator: 'F5',
                     click: () => window.webContents.send('run')
                 }

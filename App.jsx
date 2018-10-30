@@ -149,47 +149,69 @@ class App extends Component {
         });
     }
 
-    render() {
-        let markingSection;
-        if (this.state.isMarking)
-            markingSection = <MarkingSection
-                state={this.state}
-                onShowFile={this.handleShowFile}
-                onIssueChange={this.handleIssueChange}
-                onIssueAdd={this.handleIssueAdd}
-                onIssueDelete={this.handleIssueDelete}
-                onSortIssues={this.handleSortIssues}
-                setRunListener={(run) => this.onRun = run}
-            />;
-        else markingSection = <button type="button" className="btn btn-primary" onClick={() => { this.setState({ isMarking: true }) }}>Bewerten</button>;
+    renderConfig() {
+        return (
+            <div className="col main-view">
+                <div className="form-row">
+                    <div className="col form-group">
+                        <label>Blatt:</label>
+                        <input id="blatt" type="number" className="form-control" placeholder="Blatt" onChange={this.handleChange} value={this.state.blatt}></input>
+                    </div>
+                    <div className="col form-group">
+                        <label>Erste Aufgabe:</label>
+                        <input id="minExercise" type="number" className="form-control" placeholder="Erste Aufgabe" onChange={this.handleChangeMinMaxExercise} value={this.state.minExercise}></input>
+                    </div>
+                    <div className="col form-group">
+                        <label>Letzte Aufgabe:</label>
+                        <input id="maxExercise" type="number" className="form-control" placeholder="Letzte Aufgabe" onChange={this.handleChangeMinMaxExercise} value={this.state.maxExercise}></input>
+                    </div>
+                </div>
+                <div className="form-row">
+                    {this.renderExerciseConfig()}
+                </div>
+                <button type="button" className="btn btn-secondary" onClick={this.openDataDirectory}>Abgabe-Verzeichnis wählen</button>
+                <button type="button" className="btn btn-primary" onClick={() => { this.setState({ isMarking: true }) }}>Bewerten</button>
+            </div>
+        );
+    }
 
+    renderMarkingSection() {
+        return (
+            <div className="col main-view">
+                <MarkingSection
+                    state={this.state}
+                    onShowFile={this.handleShowFile}
+                    onIssueChange={this.handleIssueChange}
+                    onIssueAdd={this.handleIssueAdd}
+                    onIssueDelete={this.handleIssueDelete}
+                    onSortIssues={this.handleSortIssues}
+                    setRunListener={(run) => this.onRun = run}
+                />
+            </div>
+        );
+    }
+
+    render() {
         return (
             <div className="container-fluid full-height">
                 <div className="row full-height">
-                    <div className="col main-view">
-                        <div className="form-row">
-                            <div className="col form-group">
-                                <label>Blatt:</label>
-                                <input id="blatt" type="number" className="form-control" placeholder="Blatt" onChange={this.handleChange} value={this.state.blatt}></input>
-                            </div>
-                            <div className="col form-group">
-                                <label>Erste Aufgaben:</label>
-                                <input id="minExercise" type="number" className="form-control" placeholder="Erste Aufgabe" onChange={this.handleChangeMinMaxExercise} value={this.state.minExercise}></input>
-                            </div>
-                            <div className="col form-group">
-                                <label>Letzte Aufgaben:</label>
-                                <input id="maxExercise" type="number" className="form-control" placeholder="Letzte Aufgabe" onChange={this.handleChangeMinMaxExercise} value={this.state.maxExercise}></input>
-                            </div>
-                        </div>
-                        <div className="form-row">
-                            {this.renderExerciseConfig()}
-                        </div>
-                        {markingSection}
-                    </div>
+                    {this.state.isMarking ? this.renderMarkingSection() : this.renderConfig()}
                     <RightView src={this.state.rightViewUrl} onRun={this.onRun} showRunButton={this.state.rightViewUrl.endsWith(".java")} />
                 </div>
             </div>
         );
+    }
+
+    openDataDirectory() {
+        dialog.showOpenDialog({ properties: ["openDirectory"] }, (fileNames) => {
+            if (!fileNames)
+                return;
+
+            this.setState({
+                isMarking: false,
+                dataDir: fileNames[0]
+            });
+        });
     }
 
     addSaveLoadListeners() {
@@ -222,16 +244,7 @@ class App extends Component {
             });
         });
 
-        ipcRenderer.on('open-data', (event, arg) => {
-            dialog.showOpenDialog({ properties: ["openDirectory"] }, (fileNames) => {
-                if (!fileNames)
-                    return;
-
-                this.setState({
-                    dataDir: fileNames[0]
-                });
-            });
-        });
+        ipcRenderer.on('open-data', (event, arg) => this.openDataDirectory());
 
         ipcRenderer.on('open-compile-deps', (event, arg) => {
             dialog.showOpenDialog({ properties: ["openFile", "multiSelections"] }, (fileNames) => {
@@ -241,6 +254,12 @@ class App extends Component {
                 this.setState({
                     compileDependencies: fileNames
                 });
+            });
+        });
+
+        ipcRenderer.on('configure', (event, arg) => {
+            this.setState({
+                isMarking: false
             });
         });
     }
