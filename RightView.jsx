@@ -24,7 +24,7 @@ class RightView extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.props.src !== nextProps.src && this.state.width === 0) {
+        if (this.state.width === 0) {
             this.setState({
                 width: 499
             });
