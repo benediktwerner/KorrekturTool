@@ -1,4 +1,4 @@
-import { remote } from 'electron';
+import { remote, shell } from 'electron';
 import React, { Component } from 'react';
 import fs from 'fs-extra';
 import $ from 'jquery';
@@ -30,6 +30,7 @@ class MarkingSection extends Component {
         this.handleRun = this.handleRun.bind(this);
         this.handleAddIssue = this.handleAddIssue.bind(this);
         this.handlePrevNext = this.handlePrevNext.bind(this);
+        this.handleOpenFiles = this.handleOpenFiles.bind(this);
         this.handleTextChange = this.handleTextChange.bind(this);
         this.handleSaveOutput = this.handleSaveOutput.bind(this);
         this.handleShowOutput = this.handleShowOutput.bind(this);
@@ -171,6 +172,10 @@ class MarkingSection extends Component {
             textInput.val("").focus();
             pointsInput.val("");
         }
+    }
+
+    handleOpenFiles(event) {
+        shell.openItem(path.join(remote.app.getAppPath(), this.state.students[this.state.index].dirPath));
     }
 
     handleCheckFiles(event) {
@@ -351,7 +356,11 @@ class MarkingSection extends Component {
                         </button>
                     </div>
                 </div>
-                <h3 className="heading-margin">Dateien <button type="button" className="btn btn-primary" onClick={this.handleCheckFiles}>Prüfen</button></h3>
+                <h3 className="heading-margin">
+                    Dateien
+                    <button type="button" className="btn btn-primary" onClick={this.handleOpenFiles}>Öffnen</button>
+                    <button type="button" className="btn btn-primary" onClick={this.handleCheckFiles}>Prüfen</button>
+                </h3>
                 {this.renderFiles()}
                 <hr />
                 <h3 className="heading-margin">Aufgaben ({this.getTotalPoints() || "0"} / {this.getMaxPoints() || "?"})</h3>
