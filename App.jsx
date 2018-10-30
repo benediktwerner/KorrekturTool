@@ -228,7 +228,7 @@ class App extends Component {
                     return;
 
                 fs.writeJson(fileName, this.state, err => {
-                    if (err) console.error(err)
+                    if (err) console.error(err);
                 });
             });
         });
