@@ -13,7 +13,6 @@ button {
 }
 
 .marking-section {
-    margin-top: 20px;
     margin-bottom: 35px;
 }
 
@@ -221,6 +220,10 @@ a.file-link:not([href]):hover {
 
 .issue-input .delete-issue:hover {
     color: #c82333;
+}
+
+button {
+    margin-right: 5px;
 }
 
 h2 button, h3 button, h4 button, h5 button {
