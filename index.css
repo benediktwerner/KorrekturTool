@@ -10,6 +10,7 @@ body,
 
 button {
     cursor: pointer;
+    box-shadow: none !important;
 }
 
 .marking-section {
