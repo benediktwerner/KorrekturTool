@@ -42,7 +42,7 @@ app.on('window-all-closed', () => {
   const files = fs.readdirSync(tmpDir);
   files.filter(name => /^korrekturToolTmp.*/.test(name))
     .forEach((file) => {
-      const filePath = tmpDir + "/" + file;
+      const filePath = path.join(tmpDir, file);
       console.log("Removing tmp dir: " + filePath);
       fs.emptyDirSync(filePath);
       fs.rmdirSync(filePath);
