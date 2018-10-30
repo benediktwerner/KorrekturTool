@@ -4,7 +4,7 @@ export default function (app, window) {
             label: 'File',
             submenu: [
                 {
-                    label: 'Konfigurieren',
+                    label: 'Aufgaben konfigurieren',
                     click: () => window.webContents.send('configure')
                 },
                 {
