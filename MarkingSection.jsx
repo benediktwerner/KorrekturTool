@@ -8,6 +8,7 @@ import os from 'os';
 import path from 'path';
 import { addOutput } from './RightView';
 import IssueInput from './IssueInput';
+import CompileError from './CompileError';
 
 const dialog = remote.dialog;
 
@@ -21,8 +22,6 @@ class MarkingSection extends Component {
             students: createStudentsList(props.state.dataDir, dataFiles),
             index: 0,
             files: [],
-            compileStatus: {},
-            encodings: {},
             binDir: fs.mkdtempSync(os.tmpdir() + "/korrekturToolTmp") + "/",
             points: {},
             issuePoints: {}
@@ -48,15 +47,17 @@ class MarkingSection extends Component {
 
     studentChanged() {
         this.setState((state, props) => {
-            const files = fs.readdirSync(state.students[state.index].dirPath).filter((name) => name !== "onlinetext_assignsubmission_onlinetext.html");
-            let encodings = {}, compileStatus = {};
-            for (let i in files) {
-                encodings[files[i]] = null;
-                compileStatus[files[i]] = null;
-            }
+            let files = {};
+            fs.readdirSync(state.students[state.index].dirPath)
+                .filter((name) => name !== "onlinetext_assignsubmission_onlinetext.html")
+                .forEach(fileName => {
+                    files[fileName] = {
+                        encoding: null,
+                        compileStatus: null,
+                        compileError: null
+                    };
+                });
             return {
-                encodings: encodings,
-                compileStatus: compileStatus,
                 files: files,
                 points: {},
                 issuePoints: {}
@@ -68,21 +69,19 @@ class MarkingSection extends Component {
         }
     }
 
-    checkCompileStatus(fileName, basePath) {
+    checkCompileStatus(fileName) {
         const compilePath = this.state.binDir + fileName;
-        fs.copy(basePath + fileName, compilePath)
+        fs.copy(path.join(this.getBasePath(), fileName), compilePath)
             .then(() => {
                 exec(`javac -encoding utf-8 -cp "${this.state.binDir}" "${compilePath}"`, (err, stdout, stderr) => {
-                    if (err) {
-                        console.error("Kompilierfehler für " + fileName + ":\n" + stderr);
-                        dialog.showErrorBox("Kompilierfehler", fileName + " konnte nicht kompiliert werden:\n" + stderr);
-                    }
                     this.setState((state, props) => {
-                        let compileStatus = state.compileStatus;
-                        compileStatus[fileName] = err ? "error" : "success";
-                        return {
-                            compileStatus: compileStatus
-                        };
+                        let file = state.files[fileName];
+                        if (err) {
+                            file.compileStatus = "error";
+                            file.compileError = stderr;
+                        }
+                        else file.compileStatus = "success";
+                        return { files: state.files };
                     });
                 });
             })
@@ -91,9 +90,19 @@ class MarkingSection extends Component {
 
     handleRun(file) {
         const fileName = path.basename(file);
-        if (this.state.compileStatus[fileName] !== "success") {
-            dialog.showErrorBox("Fehler", "Das Program konnte nicht kompiliert werden!");
-            return;
+        switch (this.state.files[fileName].compileStatus) {
+            case "success": break;
+            case "compiling": return;
+            case "error":
+                dialog.showErrorBox("Kompilierfehler", this.state.files[fileName].compileError);
+                return;
+            default:
+                this.setState((state, props) => {
+                    state.files[fileName].compileStatus = "compiling";
+                    return { files: state.files };
+                });
+                this.checkCompileStatus(fileName);
+                return;
         }
 
         exec(`java -Dfile.encoding=UTF-8 -cp "${this.state.binDir}" ${fileName.replace(".java", "")}`, (err, stdout, stderr) => {
@@ -165,45 +174,40 @@ class MarkingSection extends Component {
     }
 
     handleCheckFiles(event) {
-        const basePath = this.state.students[this.state.index].dirPath + "/";
-        const compileStatus = this.state.compileStatus;
-        const encodings = {};
+        const basePath = this.getBasePath();
         const files = this.state.files;
 
         $.each(this.props.state.compileDependencies, (i, file) => {
             fs.copySync(file, this.state.binDir + path.basename(file));
         });
 
-        for (let i in files) {
-            encodings[files[i]] = getFileEncoding(basePath + files[i]);
-            if (files[i].endsWith(".java")) {
-                compileStatus[files[i]] = undefined;
-                this.checkCompileStatus(files[i], basePath);
+        for (let fileName in files) {
+            files[fileName].encoding = getFileEncoding(path.join(basePath, fileName));
+            if (fileName.endsWith(".java")) {
+                files[fileName].compileStatus = "compiling";
+                this.checkCompileStatus(fileName);
             }
         }
-        this.setState({
-            compileStatus: compileStatus,
-            encodings: encodings
-        })
+        this.setState({ files: files });
     }
 
     renderFiles() {
-        const basePath = this.state.students[this.state.index].dirPath + "/";
+        const basePath = this.getBasePath() + "/";
         const files = this.state.files;
         let fileElements = [];
-        for (let i in files) {
-            let compileStatus = getCompileInfo(this.state.compileStatus[files[i]]);
+        for (let fileName in files) {
+            let compileStatus = getCompileInfo(files[fileName]);
             if (compileStatus)
                 compileStatus = <div className="col">{compileStatus}</div>;
-            fileElements.push(<div className="row" key={"file-" + i}>
+            fileElements.push(<div className="row" key={"file-" + fileName}>
                 <div className="col">
-                    {getFileIcon(files[i])}
-                    <a className="file-link" onClick={this.props.onShowFile} data-file={basePath + files[i]}>
-                        {files[i]}
+                    {getFileIcon(fileName)}
+                    <a className="file-link" onClick={this.props.onShowFile} data-file={basePath + fileName}>
+                        {fileName}
                     </a>
                 </div>
                 {compileStatus}
-                <div className="col-4">{getEncodingInfo(this.state.encodings[files[i]])}</div>
+                <div className="col-4">{getEncodingInfo(files[fileName].encoding)}</div>
             </div>);
         }
         return fileElements;
@@ -378,6 +382,10 @@ class MarkingSection extends Component {
         let diff = (this.state.points[exercise] || 0) + (this.state.issuePoints[exercise] || 0);
         return Math.max((this.props.state.exercises[exercise].maxPoints || 0) + (diff < 0 ? diff : 0), 0);
     }
+
+    getBasePath() {
+        return this.state.students[this.state.index].dirPath;
+    }
 }
 
 function createStudentsList(dataDir, files) {
@@ -406,17 +414,17 @@ function getFileIcon(fileName) {
     return <i className="fa fa-file-o fa-padding"></i>
 }
 
-function getCompileInfo(compileStatus) {
-    if (compileStatus === undefined) {
-        return <span><i className="fa fa-spinner fa-pulse fa-fw"></i>Kompiliere</span>;
+function getCompileInfo(file) {
+    switch (file.compileStatus) {
+        case "compiling":
+            return <span><i className="fa fa-spinner fa-pulse fa-fw"></i>Kompiliere</span>;
+        case "success":
+            return <span><i className="fa fa-check-circle fa-padding"></i>Kompiliert</span>;
+        case "error":
+            return <CompileError errorMessage={file.compileError} />;
+        default:
+            return "";
     }
-    else if (compileStatus === null) {
-        return "";
-    }
-    else if (compileStatus === "success") {
-        return <span><i className="fa fa-check-circle fa-padding"></i>Kompiliert</span>;
-    }
-    return <span><i className="fa fa-times-circle fa-padding"></i>Kompiliert nicht</span>;
 }
 
 function getEncodingInfo(encoding) {

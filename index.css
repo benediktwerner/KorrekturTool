@@ -99,6 +99,15 @@ a.file-link:not([href]):hover {
     text-decoration: underline;
 }
 
+a.compile-error {
+    color: red;
+    text-decoration: underline;
+}
+
+.popover {
+    max-width: 100%;
+}
+
 .points {
     align-items: flex-start;
     font-size: 1.2em;
