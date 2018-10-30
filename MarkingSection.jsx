@@ -334,7 +334,10 @@ class MarkingSection extends Component {
                 return;
 
             fs.writeFile(fileName, this.getHTMLOutput(), err => {
-                if (err) console.error(err)
+                if (err) {
+                    console.error(err)
+                    dialog.showErrorBox("Fehler beim Speichern", err);
+                }
             });
         });
     }
@@ -412,15 +415,15 @@ function createStudentsList(dataDir, files) {
 
 function getFileIcon(fileName) {
     if (fileName.endsWith(".pdf")) {
-        return <i className="fa fa-file-pdf-o fa-padding"></i>
+        return <i className="fa fa-file-pdf-o fa-padding"></i>;
     }
     else if (fileName.endsWith(".java")) {
-        return <i className="icon-java-bold fa-lg"></i>
+        return <i className="icon-java-bold fa-lg"></i>;
     }
     else if (fileName.endsWith(".txt")) {
-        return <i className="fa fa-file-text-o fa-padding"></i>
+        return <i className="fa fa-file-text-o fa-padding"></i>;
     }
-    return <i className="fa fa-file-o fa-padding"></i>
+    return <i className="fa fa-file-o fa-padding"></i>;
 }
 
 function getCompileInfo(file) {

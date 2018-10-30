@@ -38,7 +38,7 @@ button {
     margin-left: 10px;
 }
 
-.valign-content-middle>* {
+.valign-content-middle > * {
     vertical-align: middle;
 }
 
@@ -79,7 +79,7 @@ button {
     top: 0;
 }
 
-.right-view>* {
+.right-view > * {
     overflow: hidden;
 }
 
@@ -115,13 +115,13 @@ a.compile-error {
     max-width: 100px;
 }
 
-.points>input.form-control {
+.points > input.form-control {
     margin-top: 5px;
     text-align: right;
 }
 
-.points>input::-webkit-inner-spin-button,
-.points>input::-webkit-outer-spin-button {
+.points > input::-webkit-inner-spin-button,
+.points > input::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
@@ -236,7 +236,10 @@ button {
     margin-right: 5px;
 }
 
-h2 button, h3 button, h4 button, h5 button {
+h2 button,
+h3 button,
+h4 button,
+h5 button {
     margin-left: 7px;
 }
 
