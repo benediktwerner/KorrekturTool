@@ -23,6 +23,7 @@ class App extends Component {
 
     this.addSaveLoadListeners();
     this.openDataDirectory = this.openDataDirectory.bind(this);
+    this.openWorkspaceDirectory = this.openWorkspaceDirectory.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleShowFile = this.handleShowFile.bind(this);
     this.handleChangeMinMaxExercise = this.handleChangeMinMaxExercise.bind(this);
@@ -203,6 +204,9 @@ class App extends Component {
         <button type="button" className="btn btn-secondary" onClick={this.openDataDirectory}>
           Abgabe-Verzeichnis wählen
         </button>
+        <button type="button" className="btn btn-secondary" onClick={this.openWorkspaceDirectory}>
+          Korrektur-Verzeichnis wählen
+        </button>
         <button
           type="button"
           className="btn btn-primary"
@@ -252,8 +256,17 @@ class App extends Component {
       if (!fileNames) return;
 
       this.setState({
-        isMarking: false,
         dataDir: fileNames[0],
+      });
+    });
+  }
+
+  openWorkspaceDirectory() {
+    dialog.showOpenDialog({ properties: ['openDirectory'] }, fileNames => {
+      if (!fileNames) return;
+
+      this.setState({
+        workspaceDir: fileNames[0],
       });
     });
   }
@@ -283,7 +296,8 @@ class App extends Component {
       });
     });
 
-    ipcRenderer.on('open-data', (event, arg) => this.openDataDirectory());
+    ipcRenderer.on('open-data', this.openDataDirectory);
+    ipcRenderer.on('open-workspace', this.openWorkspaceDirectory);
 
     ipcRenderer.on('open-compile-deps', (event, arg) => {
       dialog.showOpenDialog({ properties: ['openFile', 'multiSelections'] }, fileNames => {

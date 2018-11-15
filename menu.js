@@ -23,6 +23,10 @@ export default function (app, window) {
                     click: () => window.webContents.send('open-data')
                 },
                 {
+                    label: 'Korrektur-Verzeichnis wählen',
+                    click: () => window.webContents.send('open-workspace')
+                },
+                {
                     label: 'Kompile-Abhängigkeiten wählen',
                     click: () => window.webContents.send('open-compile-deps')
                 },

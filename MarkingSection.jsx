@@ -34,6 +34,7 @@ class MarkingSection extends Component {
     this.handleSaveOutput = this.handleSaveOutput.bind(this);
     this.handleShowOutput = this.handleShowOutput.bind(this);
     this.handleCheckFiles = this.handleCheckFiles.bind(this);
+    this.handleCopyFiles = this.handleCopyFiles.bind(this);
     this.handlePointsChange = this.handlePointsChange.bind(this);
 
     if (this.props.setRunListener) this.props.setRunListener(this.handleRun);
@@ -201,6 +202,23 @@ class MarkingSection extends Component {
       }
     }
     this.setState({ files: files });
+  }
+
+  handleCopyFiles() {
+    let targetDir = this.props.state.workspaceDir;
+    if (!targetDir)
+      return;
+
+    // Remove old files
+    fs.readdirSync(targetDir)
+      .filter(fileName => fileName.endsWith('.java') && !fileName.startsWith('__'))
+      .forEach(fileName => fs.remove(path.join(targetDir, fileName)));
+
+    // Copy new files
+    for (let fileName in this.state.files) {
+      if (fileName.endsWith('.java'))
+        fs.copy(path.join(this.getBasePath(), fileName), path.join(targetDir, fileName));
+    }
   }
 
   renderFiles() {
@@ -423,6 +441,9 @@ class MarkingSection extends Component {
           </button>
           <button type="button" className="btn btn-primary" onClick={this.handleCheckFiles}>
             Prüfen
+          </button>
+          <button type="button" className="btn btn-primary" onClick={this.handleCopyFiles}>
+            Kopieren
           </button>
         </h3>
         {this.renderFiles()}
