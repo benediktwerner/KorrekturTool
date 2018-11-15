@@ -372,7 +372,7 @@ class MarkingSection extends Component {
     output += '<br />\n';
     output += `<p><b>Gesamt (Σ): ${this.getTotalPoints()} von ${this.getMaxPoints()}</b></p>\n`;
     output +=
-      "<p><small style='color: grey'>Fragen oder Beschwerden entweder per E-mail an <a href='mailto:benedikt.werner@tum.de'>benedikt.werner@tum.de</a> oder auf Telegram an <a href='https://t.me/benediktwerner'>@benediktwerner</a></small></p>";
+      '<p><small style="color: grey">Fragen oder Beschwerden entweder per E-mail an <a href="mailto:benedikt.werner@tum.de">benedikt.werner@tum.de</a> oder auf Telegram an <a href="https://t.me/benediktwerner">@benediktwerner</a></small></p>';
     return output;
   }
 
@@ -393,10 +393,11 @@ class MarkingSection extends Component {
   }
 
   handleSaveOutput(event) {
-    dialog.showSaveDialog({ defaultPath: this.state.students[this.state.index].dirName + '.txt' }, fileName => {
+    const fileName = this.state.students[this.state.index].dirName.split('_')[0] + '.txt';
+    dialog.showSaveDialog({ defaultPath: fileName }, fileName => {
       if (fileName === undefined) return;
 
-      fs.writeFile(fileName, this.getHTMLOutput(), err => {
+      fs.writeFile(fileName, this.getTotalPoints() + "\n " + this.getHTMLOutput(), err => {
         if (err) {
           console.error(err);
           dialog.showErrorBox('Fehler beim Speichern', err);
