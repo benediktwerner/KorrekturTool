@@ -24,7 +24,7 @@ class RightView extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.state.width === 0) {
+        if (nextProps.src && this.state.width === 0) {
             this.setState({
                 width: 499
             });
@@ -100,7 +100,7 @@ class RightView extends Component {
                         {this.renderOutput()}
                     </pre>
                     <div id="control-bar">
-                        <button title="Close" onClick={() => this.setState({ width: 0 })}><i className="fa fa-times"></i></button>
+                        <button title="Close" onClick={this.props.onClose}><i className="fa fa-times"></i></button>
                         <div className="divider" hidden={!this.props.showRunButton}></div>
                         <button title="Run" onClick={() => this.props.onRun(this.props.src)} hidden={!this.props.showRunButton}><i className="fa fa-play"></i> Run</button>
                         <div className="divider" hidden={this.state.output.length === 0}></div>

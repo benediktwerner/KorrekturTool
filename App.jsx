@@ -1,6 +1,7 @@
-import { ipcRenderer, remote } from 'electron';
+import { ipcRenderer, remote, shell } from 'electron';
 import React, { Component } from 'react';
 import fs from 'fs-extra';
+import path from 'path';
 import MarkingSection from './MarkingSection';
 import RightView from './RightView';
 
@@ -17,7 +18,7 @@ class App extends Component {
       exercises: {},
       isMarking: false,
       rightViewUrl: '',
-      dataDir: 'data',
+      dataDir: path.join(remote.app.getAppPath(), 'data'),
       compileDependencies: [],
     };
 
@@ -26,12 +27,19 @@ class App extends Component {
     this.openWorkspaceDirectory = this.openWorkspaceDirectory.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleShowFile = this.handleShowFile.bind(this);
+    this.handleCloseRightView = this.handleCloseRightView.bind(this);
     this.handleChangeMinMaxExercise = this.handleChangeMinMaxExercise.bind(this);
     this.handleChangeExerciseMaxPoints = this.handleChangeExerciseMaxPoints.bind(this);
     this.handleIssueAdd = this.handleIssueAdd.bind(this);
     this.handleIssueDelete = this.handleIssueDelete.bind(this);
     this.handleIssueChange = this.handleIssueChange.bind(this);
     this.handleSortIssues = this.handleSortIssues.bind(this);
+  }
+
+  handleCloseRightView() {
+    this.setState({
+      rightViewUrl: '',
+    });
   }
 
   handleChangeExerciseMaxPoints(event) {
@@ -109,9 +117,13 @@ class App extends Component {
   }
 
   handleShowFile(event) {
-    this.setState({
-      rightViewUrl: event.target.dataset['file'],
-    });
+    const file = event.target.dataset['file'];
+    if (file.endsWith('.pdf')) shell.openItem(file);
+    else {
+      this.setState({
+        rightViewUrl: file,
+      });
+    }
   }
 
   handleIssueAdd(exercise, text, points) {
@@ -244,6 +256,7 @@ class App extends Component {
           <RightView
             src={this.state.rightViewUrl}
             onRun={this.onRun}
+            onClose={this.handleCloseRightView}
             showRunButton={this.state.rightViewUrl.endsWith('.java')}
           />
         </div>
@@ -275,6 +288,7 @@ class App extends Component {
     const options = {
       filters: [{ name: 'Json', extensions: ['json'] }, { name: 'All Files', extensions: ['*'] }],
       properties: ['openFile'],
+      defaultPath: 'korrektur.json',
     };
     ipcRenderer.on('save', (event, arg) => {
       dialog.showSaveDialog(options, fileName => {

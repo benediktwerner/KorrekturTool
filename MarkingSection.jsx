@@ -183,7 +183,7 @@ class MarkingSection extends Component {
   }
 
   handleOpenFiles(event) {
-    shell.openItem(path.join(remote.app.getAppPath(), this.state.students[this.state.index].dirPath));
+    shell.openItem(this.state.students[this.state.index].dirPath);
   }
 
   handleCheckFiles(event) {
@@ -206,18 +206,16 @@ class MarkingSection extends Component {
 
   handleCopyFiles() {
     let targetDir = this.props.state.workspaceDir;
-    if (!targetDir)
-      return;
+    if (!targetDir) return;
 
     // Remove old files
     fs.readdirSync(targetDir)
-      .filter(fileName => fileName.endsWith('.java') && !fileName.startsWith('__'))
+      .filter(fileName => fileName.endsWith('.java') && !fileName.startsWith('__') && fileName != 'Terminal.java')
       .forEach(fileName => fs.remove(path.join(targetDir, fileName)));
 
     // Copy new files
     for (let fileName in this.state.files) {
-      if (fileName.endsWith('.java'))
-        fs.copy(path.join(this.getBasePath(), fileName), path.join(targetDir, fileName));
+      if (fileName.endsWith('.java')) fs.copy(path.join(this.getBasePath(), fileName), path.join(targetDir, fileName));
     }
   }
 
@@ -397,7 +395,7 @@ class MarkingSection extends Component {
     dialog.showSaveDialog({ defaultPath: fileName }, fileName => {
       if (fileName === undefined) return;
 
-      fs.writeFile(fileName, this.getTotalPoints() + "\n " + this.getHTMLOutput(), err => {
+      fs.writeFile(fileName, this.getTotalPoints() + '\n' + this.getHTMLOutput(), err => {
         if (err) {
           console.error(err);
           dialog.showErrorBox('Fehler beim Speichern', err);
@@ -423,7 +421,8 @@ class MarkingSection extends Component {
               onClick={this.handlePrevNext}
               disabled={this.state.index <= 0}
             >
-              <i className="fa fa-arrow-left fa-lg" />Prev
+              <i className="fa fa-arrow-left fa-lg" />
+              Prev
             </button>
             <button
               type="button"
@@ -431,7 +430,8 @@ class MarkingSection extends Component {
               onClick={this.handlePrevNext}
               disabled={this.state.index >= this.state.students.length - 1}
             >
-              Next<i className="fa fa-arrow-right fa-lg" />
+              Next
+              <i className="fa fa-arrow-right fa-lg" />
             </button>
           </div>
         </div>
@@ -517,13 +517,15 @@ function getCompileInfo(file) {
     case 'compiling':
       return (
         <span>
-          <i className="fa fa-spinner fa-pulse fa-fw" />Kompiliere
+          <i className="fa fa-spinner fa-pulse fa-fw" />
+          Kompiliere
         </span>
       );
     case 'success':
       return (
         <span>
-          <i className="fa fa-check-circle fa-padding" />Kompiliert
+          <i className="fa fa-check-circle fa-padding" />
+          Kompiliert
         </span>
       );
     case 'error':
@@ -537,7 +539,8 @@ function getEncodingInfo(encoding) {
   if (!encoding) {
     return (
       <span>
-        <i className="fa fa-question-circle fa-padding" />Unbekannt
+        <i className="fa fa-question-circle fa-padding" />
+        Unbekannt
       </span>
     );
   }

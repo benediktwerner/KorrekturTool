@@ -11,7 +11,7 @@ def load_grade_file(grades_dir, fileName):
     result = {}
 
     with open(os.path.join(grades_dir, fileName)) as f:
-        result["grade"] = int(f.readline().strip())
+        result["grade"] = float(f.readline().strip())
         result["feedback"] = f.read()
 
     return name, result
