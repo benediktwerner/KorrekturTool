@@ -363,7 +363,7 @@ class MarkingSection extends Component {
       output +=
         $('#exercise-' + i + '-text')
           .val()
-          .replace(/\n/g, '<br />') || (perfect ? 'Passt' : '');
+          .replace(/\n/g, '<br />\n') || (perfect ? 'Passt' : '');
       output += '</td>\n</tr>\n';
     }
     output += '</table>\n';
