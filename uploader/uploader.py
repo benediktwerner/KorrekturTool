@@ -18,7 +18,7 @@ def load_grade_file(grades_dir, fileName):
 
 
 def get_snippet(grades):
-    with open("upload-snippet.js") as f:
+    with open("snippet.js") as f:
         return f.read().replace("XXXXX", json.dumps(grades))
 
 
