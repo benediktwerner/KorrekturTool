@@ -453,10 +453,10 @@ class MarkingSection extends Component {
           Aufgaben ({this.getTotalPoints() || '0'} / {this.getMaxPoints() || '?'})
         </h3>
         {this.renderExercises()}
-        <button className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={this.handleShowOutput}>
+        <button className="btn btn-primary mt-4" data-toggle="modal" data-target="#modal" onClick={this.handleShowOutput}>
           HTML
         </button>
-        <button className="btn btn-primary" onClick={this.handleSaveOutput}>
+        <button className="btn btn-primary mt-4" onClick={this.handleSaveOutput}>
           Speichern
         </button>
       </div>
