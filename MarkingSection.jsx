@@ -153,14 +153,15 @@ class MarkingSection extends Component {
 
   handleTextChange(event) {
     let newPoints = 0;
-    let array = event.target.value.match(/.*\[.*\]/g);
-    for (let i in array) {
-      let s = array[i]
-        .match(/\[.*\]/)[0]
-        .replace('[', '')
-        .replace(']', '')
-        .replace(',', '.');
-      newPoints += parseFloat(s, 10);
+    let pointMatches = event.target.value.match(/\[[\d-,.]+?\]$/gm);
+    if (pointMatches !== null) {
+      for (let match of pointMatches) {
+        const s = match
+          .replace('[', '')
+          .replace(']', '')
+          .replace(',', '.');
+        newPoints += parseFloat(s, 10);
+      }
     }
     const exercise = event.target.dataset.exercise;
     this.setState((state, props) => {
@@ -453,7 +454,12 @@ class MarkingSection extends Component {
           Aufgaben ({this.getTotalPoints() || '0'} / {this.getMaxPoints() || '?'})
         </h3>
         {this.renderExercises()}
-        <button className="btn btn-primary mt-4" data-toggle="modal" data-target="#modal" onClick={this.handleShowOutput}>
+        <button
+          className="btn btn-primary mt-4"
+          data-toggle="modal"
+          data-target="#modal"
+          onClick={this.handleShowOutput}
+        >
           HTML
         </button>
         <button className="btn btn-primary mt-4" onClick={this.handleSaveOutput}>
